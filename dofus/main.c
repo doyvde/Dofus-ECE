@@ -248,49 +248,93 @@ int main()
     // Boucle de jeu (rien pour l'instant)
     while (!key[KEY_ESC])
     {
-        // dessiner le terrain
+        // Dessiner le terrain
         dessineTerrain(page, terrain);
 
-        //( mouse_b&1 && mouse_x<=40 && mouse_y<=20)
+        //( mouse_b&1 && mouse_x<=40 && mouse_x>=390 && mouse_y<=20 && mouse_y>=20)
 
-        // gérer déplacements en prenant en compte les obstacles
-        if (    key[KEY_RIGHT] && !typeTerrain(acteur,4,0,1) )
+        // Gérer déplacements en prenant en compte les obstacles
+
+        if (    key[KEY_RIGHT] && !typeTerrain(acteur,4,0,1) )//droite
             acteur->x+=4;
 
-        if (    key[KEY_LEFT] && !typeTerrain(acteur,-4,0,1) )
+        if (    key[KEY_LEFT] && !typeTerrain(acteur,-4,0,1) )//gauche
            acteur->x-=4;
 
-        if (    key[KEY_DOWN] && !typeTerrain(acteur,0,4,1) )
+        if (    key[KEY_DOWN] && !typeTerrain(acteur,0,4,1) )//bas
            acteur->y+=4;
 
-        if (    key[KEY_UP] && !typeTerrain(acteur,0,-4,1) )
+        if (    key[KEY_UP] && !typeTerrain(acteur,0,-4,1) )//haut
            acteur->y-=4;
 
-        // détecter interactions avec des éléments spéciaux
-        if ( typeTerrain(acteur,0,0,2) ) // dans l'eau ?
-            textprintf_centre_ex(page,font,400,560,makecol(255,255,255),0," NAGE ");
-        else
-            textprintf_centre_ex(page,font,400,560,makecol(255,255,255),0,"MARCHE");
 
-        textprintf_ex(page,font,0,580,makecol(255,0,0),makecol(0,255,0),"Joueur 1:");
-        textprintf_ex(page,font,0,600,makecol(255,0,0),makecol(0,255,0),"PV:|||||||||||||||||||||||||||||");
-        textprintf_ex(page,font,0,620,makecol(255,0,0),makecol(0,255,0),"PM:|||");
-        textprintf_centre_ex(page,font,400,580,makecol(255,255,255),0,"Z");
-        textprintf_centre_ex(page,font,400,600,makecol(255,255,255),0,"S");
-        textprintf_centre_ex(page,font,390,590,makecol(255,255,255),0,"Q");
-        textprintf_centre_ex(page,font,410,590,makecol(255,255,255),0,"D");
+
+        // Détecter interactions avec des éléments spéciaux
+        if ( typeTerrain(acteur,0,0,2) ) // dans l'eau ?
+            textprintf_centre_ex(page,font,400,565,makecol(255,255,255),0," NAGE ");
+        else
+            textprintf_centre_ex(page,font,400,565,makecol(255,255,255),0,"MARCHE");
+
+
+
+        // Infos joueur
+        textprintf_ex(page,font,5,580,makecol(255,0,0),makecol(0,255,0),"Joueur 1:");
+        textprintf_ex(page,font,5,600,makecol(255,0,0),makecol(0,255,0),"PV:|||||||||||||||||||||||||||||");
+        textprintf_ex(page,font,5,620,makecol(255,0,0),makecol(0,255,0),"PM:|||");
+
+
+        // Commande
+
+        // bouton hauts
+        rectfill(page,390,588,410,598,makecol(0,128,0 ));
+        textprintf_centre_ex(page,font,400,590,makecol(255,255,255),0,"^");
+        //( mouse_b&1 && mouse_x<=410 && mouse_x>=390 && mouse_y<=598 && mouse_y>=588)
+
+        // bouton bas
+        rectfill(page,390,610,410,620,makecol(0,128,0 ));
+        textprintf_centre_ex(page,font,400,612,makecol(255,255,255),0,"V");
+        //( mouse_b&1 && mouse_x<=410 && mouse_x>=390 && mouse_y<=610 && mouse_y>=620)
+
+        // bouton gauche
+        rectfill(page,365,598,390,610,makecol(0,128,0 ));
+        textprintf_centre_ex(page,font,375,600,makecol(255,255,255),0,"<");
+        //( mouse_b&1 && mouse_x<=390 && mouse_x>=365 && mouse_y<=610 && mouse_y>=598)
+
+        // bouton droit
+        rectfill(page,410,598,435,610,makecol(0,128,0 ));
+        textprintf_centre_ex(page,font,425,600,makecol(255,255,255),0,">");
+        //( mouse_b&1 && mouse_x<=435 && mouse_x>=410 && mouse_y<=610 && mouse_y>=598)
+
+        // bouton attaque corps à corps
+        rectfill(page,330,625,370,642,makecol(255,0,0 ));
         textprintf_centre_ex(page,font,350,630,makecol(255,255,255),0,"Arme");
+        //( mouse_b&1 && mouse_x<=370 && mouse_x>=330 && mouse_y<=642 && mouse_y>=625)
+
+        // bouton attaque à distance
+        rectfill(page,430,625,470,642,makecol(0,0,255));
         textprintf_centre_ex(page,font,450,630,makecol(255,255,255),0,"Sort");
+        //( mouse_b&1 && mouse_x<=470 && mouse_x>=430 && mouse_y<=642 && mouse_y>=625)
+
+        // Infos ennemi
         textprintf_right_ex(page,font,600,580,makecol(255,0,0),makecol(0,255,0),"Ennemi :");
         textprintf_right_ex(page,font,792,600,makecol(255,0,0),makecol(0,255,0),"PV:|||||||||||||||||||||||||||||");
 
-        // afficher personnage (positionner par rapport à ses jambes)
+        // Bord console utilisateur
+        rect(page,0,560,800,650,makecol(0,255,0 ));
+        rect(page,1,561,799,649,makecol(0,255,0 ));
+        rect(page,2,562,798,648,makecol(0,255,0 ));
+        rect(page,3,563,797,647,makecol(0,255,0 ));
+
+        // Info curseur
+        textprintf_ex(page,font,690,635,makecol(0,255,0),makecol(0,0,0),"x=%4d y=%4d",mouse_x,mouse_y);
+
+        // Afficher personnage (positionner par rapport à ses jambes)
         draw_sprite(page, acteur->img, acteur->x - acteur->img->w/2, acteur->y - acteur->img->h + 8);
 
-        // affichage du buffer mis a jour a l'ecran
+        // Affichage du buffer mis a jour a l'ecran
         blit(page,screen,0,0,0,0,SCREEN_W,SCREEN_H);
 
-        // on fait une petite pause
+        // On fait une petite pause
         rest(15);
 
     }
