@@ -1,0 +1,6 @@
+# depslib dependency file v1.0
+1652270629 source:c:\users\denis\onedrive\documents\ece ing1\informatique\code\dofus\main.c
+	<stdio.h>
+	<stdlib.h>
+	<allegro.h>
+
