@@ -1,0 +1,105 @@
+#include <stdio.h>
+#include <stdlib.h>
+#include <allegro.h>
+
+
+#define NB_JOUEUR_MAX 4
+#define TXTUILE 45
+#define TYTUILE 70
+
+#define XORIGINE 400
+#define YORIGINE 500
+
+
+
+///EXEMPLE D'UTILISATION DES FONCTIONS
+//Appuyer sur espace pour changer le joueur actif (et donc le cadre)
+//Appuyer sur n pour réduire le nombre de joueur total
+int main()
+{
+    int NB_JOUEUR_ACTIF = 4;
+    BITMAP* sprites[NB_JOUEUR_ACTIF];
+
+    allegro_install();
+
+    for(int i = 0 ;i<NB_JOUEUR_ACTIF; i++){
+        sprites[i] =  create_bitmap(TXTUILE,TYTUILE);
+        recupererSprite(sprites[i],i);
+
+    }
+
+
+    int compteur = 0;
+
+    while(!key[KEY_ESC]){
+        if(keypressed()){
+            int choix = readkey();
+
+            switch(choix>>8){
+                case KEY_SPACE : compteur++;
+                                 compteur = compteur % NB_JOUEUR_ACTIF;
+                    break;
+                case KEY_N : NB_JOUEUR_ACTIF--;
+                    break;
+            }
+        }
+
+        afficherIconePersonnage(screen, NB_JOUEUR_ACTIF, sprites);
+        dessinerContourPhoto(screen, XORIGINE, YORIGINE, compteur, TXTUILE, TYTUILE, makecol(0,0,255));
+        rest(15);
+        clear_bitmap(screen);
+    }
+
+
+    allegro_exit();
+    return 0;
+}END_OF_MAIN();
+
+void dessinerContourPhoto(BITMAP* bmp, int xorigine, int yorigine, int numeroPhoto, int largeur, int hauteur, int couleur)
+{
+    xorigine = xorigine + largeur*numeroPhoto;  //on se positionne au bon endroit en fonction de la photo à encadrer
+    dessinerCadre(bmp, xorigine, yorigine, xorigine + largeur, yorigine + hauteur, 3,couleur);
+}
+
+void dessinerCadre(BITMAP* bmp, int x1, int y1, int x2, int y2, int epaisseur, int couleur)
+{
+    for(int i=0; i<epaisseur; i++){
+        rect(bmp, x1+i, y1+i, x2-i, y2-i, couleur); //on dessine plusieurs rectangle vide imbriqué les uns dans les autres
+    }
+}
+
+void afficherIconePersonnage(BITMAP* bmp, int NB_JOUEUR_ACTIF, BITMAP* sprites[NB_JOUEUR_MAX])
+{
+    for(int i = 0; i < NB_JOUEUR_ACTIF; i++){
+        draw_sprite(bmp, sprites[i], XORIGINE + i*sprites[i]->w, YORIGINE);
+    }
+}
+
+void recupererSprite(BITMAP* sprite, int numeroSprite)
+{
+    blit(load_bitmap("pokemon.bmp", NULL), sprite,0, TYTUILE*numeroSprite, 0, 0, TXTUILE, TYTUILE );
+}
+
+
+void allegro_install()
+{
+    allegro_init();
+    install_keyboard();
+
+    install_mouse();
+    if(install_mouse() == -1){
+        allegro_message("Erreur souris ! : %s", allegro_error);
+        //return -1;
+    }
+
+    set_color_depth(desktop_color_depth());
+    set_gfx_mode(GFX_AUTODETECT_WINDOWED, 800, 650, 0,0);
+
+    if(set_gfx_mode(GFX_AUTODETECT_WINDOWED, 800, 650, 0,0) != 0){
+        set_gfx_mode(GFX_TEXT, 0,0,0,0);
+        allegro_message("Erreur graphique !\n%s\n", allegro_error);
+        //return 1;
+    }
+
+    show_mouse(screen);
+}
