@@ -19,185 +19,8 @@ DECOR TILEMAP: Ce programme construit un decor à l'écran
 **************************************************************************/
 
 #include <allegro.h>
+#include "mabiblio.h"
 
-
-// Pour plus de simplicité : constantes des tuiles utilisées en globale
-// ( pour gérer plusieurs ensembles de tuiles il faudrait
-//   mettre ces informations dans une structure ... )
-
-#define NTUILE     213   // Nombre de tuiles graphiques utilisées
-#define TXTUILE    16    // Largeur des tuiles
-#define TYTUILE    16    // Hauteur des tuiles
-#define NCOLTUILE  20    // Nombre de colonnes de tuiles dans le fichier image
-
-#define NXMAP      50      // Nombre de tuiles en largeur sur le terrain
-#define NYMAP      35      // Nombre de tuiles en hauteur sur le terrain
-
-// Sur cet exemple on a un seul ensemble de tuiles
-// ( on s'autorise une globale, là encore pour simplifier )
-BITMAP *tableTuiles;
-
-// Pour gérer les collisions on indique les types de tuiles : 1 obstacle  2 eau
-int typeTuiles[NTUILE] = {
-    1, 1, 1, 1, 1, 1, 0, 0, 1, 0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1,
-    1, 1, 1, 1, 1, 1, 0, 1, 1, 0, 0, 1, 1, 1, 1, 1, 1, 0, 0, 0,
-    0, 1, 1, 0, 1, 1, 0, 0, 1, 1, 1, 1, 1, 0, 0, 1, 1, 1, 1, 1,
-    0, 0, 1, 0, 0, 0, 1, 1, 1, 0, 1, 1, 0, 0, 1, 1, 1, 1, 1, 1,
-    1, 1, 0, 1, 0, 0, 1, 0, 0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 0,
-    0, 0, 0, 0, 1, 0, 0, 1, 1, 1, 1, 0, 0, 0, 1, 1, 0, 0, 1, 1,
-    1, 1, 0, 1, 0, 1, 1, 2, 2, 2, 2, 1, 1, 1, 1, 1, 1, 1, 1, 1,
-    2, 1, 1, 1, 1, 1, 1, 0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 2, 1,
-    0, 1, 1, 1, 2, 2, 2, 2, 1, 1, 1, 1, 2, 2, 2, 1, 1, 1, 1, 1,
-    1, 1, 1, 0, 0, 1, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
-    0, 0, 0, 0, 0, 1, 1, 1, 2, 1, 1, 2, 2
-};
-
-// Ici un seul terrain de jeu
-// ( pour en avoir plusieurs faire un tableau de plusieurs des ces matrices
-int terrain[NYMAP][NXMAP] = {
-    {  0,   1,   2,   3,   4,   2,   3,   4,   2,   3,   4,   2,   3,   4,   2,   3,   5,   6,   6,   6,   6,   6,   6,   6,   7,   6,   6,   6,   7,   6,   6,   7,   7,   6,   6,   6,   8,   9,   6,   7,   8,  10,  11,  12,  12,  12,  13,  14,  15,  16 },
-    { 17,  18,  19,  20,  21,  22,  20,  21,  22,  20,  21,  22,  20,  21,  23,  24,  25,   6,   6,   6,   7,   6,   6,   6,   6,   6,   6,   6,   6,   7,   7,   6,   6,   7,   6,  26,   8,   9,   6,   7,   8,  11,  27,  28,  28,  28,  14,  13,  14,  15 },
-    { 29,  30,  31,  32,  33,  34,  32,  33,  34,  32,  33,  34,  32,  33,  35,  36,   6,   7,   6,   6,   6,   6,   6,   6,   7,  37,   6,   7,   6,   6,  38,  39,  39,  40,  26,  41,  42,  43,   6,   6,  44,  27,  45,  12,  12,  12,  13,  14,  13,  14 },
-    { 46,  47,  48,  49,  50,  51,  49,  50,  51,  49,  50,  51,  49,  50,  52,   6,   6,   6,   7,  37,   7,   6,   6,   6,   6,   6,   6,  37,   6,   6,  39,  39,  38,  38,  41,  42,  43,   6,   6,   7,  53,  45,  27,  28,  28,  28,  14,  13,  14,  13 },
-    { 54,  47,  55,  56,  57,  58,  56,  57,  58,  56,  57,  58,  56,  57,  59,   6,   6,  60,  61,   6,   6,  60,  61,   6,   6,   6,   7,   6,   6,   6,   6,   6,   6,   6,   8,   9,   6,   6,   6,   6,   6,  53,  45,  12,  12,  12,  13,  14,  13,  62 },
-    { 63,  64,  65,  66,  67,  68,  66,  67,  68,  66,  67,  68,  66,  67,  69,   6,  60,  70,  71,  72,  73,  74,  75,  61,   6,   6,   6,   6,  76,  77,  78,  79,  80,   6,  44,  81,  82,   6,   6,   7,   6,   6,  53,  83,  83,  28,  14,  13,  62,   6 },
-    {  6,   6,   6,   6,   6,   6,  84,  85,   6,   6,   6,   6,   6,   6,   6,  60,  70,  86,  12,  87,  88,  12,  89,  75,  61,   6,   6,   6,  90,  91,  92,  93,  94,   6,  53,  45,  81,  95,  95,  95,  95,  95,  95,  95,  96,  12,  13,  62,  97,  98 },
-    { 99, 100,   6,   6,   6,  84, 101, 102, 103, 103, 103, 103, 103,  85,  60,  70,  86,  13, 104, 105, 106, 104,  45,  89,  75,  61,   6,   6, 107,   4,   2,   3,   5,   6,   6,  53,  45,  12,  12,  12,  12,  12,  12,  12,  13,  83,  62,   6, 108, 109 },
-    {110, 111, 112,  82,   6,  63, 113, 113, 113, 113, 113, 113, 113,  64,  70,  86,  13, 114, 115, 116, 117, 115, 118,  45,  89,  75,   6, 119, 120,  21,  23,  24,  25,   7,   6,   7,  53,  83,  83,  83,  83,  83,  83,  83,  62,   6,  97,  98,   6,   6 },
-    {121,   6, 122, 123,  82,  60, 124, 124, 124, 124, 124,  61,  99, 100, 125, 126, 114, 127, 128, 129, 129, 129, 130, 118, 131, 132,   6, 133,  32,  33,  35,  36, 134, 134,   7,   6,   6,   6,   6,   6,   6,   6,   6,   6,   6,   6, 108, 109,   6,   6 },
-    {135,   6,   6, 136,  81,  74, 137, 137, 137, 137, 137,  71, 110, 111, 125, 138, 139, 129, 129, 140, 129, 129, 129, 141, 142, 132,   6,  48,  49,  50,  52, 134, 134, 134,  38,  38,  39,  40,   7,   6,   6,   7,   6, 143, 144,   6, 119, 120, 145, 146 },
-    {  6,   6,   6, 147,  45,  12,  12,  12,  12,  12,  12,  12, 121,   6, 125, 138, 139, 129, 129, 129, 129, 128, 129, 141, 142, 132,   6,  55,  56,  57,  59, 134, 134, 134,  38,  38,  38,  38,   7,   6,   7,   6,   6, 148, 149,   6, 133,  32,  33, 150 },
-    {  7,   6,  39,  40,  53,  83, 151, 152, 153, 154,  83,  83, 135,   6, 125, 138, 139, 129, 129, 129, 129, 129, 129, 141, 142, 132,  61,  65,  66,  67,  69,   6,   6,   7,   6,   7,   6,   6,   6,  37,   6,   6,   6,   7,   6,   6,  48,  49,  50,  52 },
-    {  6,   7,  38,  38,   6,   6, 133,  32,  33, 150,   6,   6,   6,   6, 155, 156, 157, 158, 129, 129, 128, 129, 129, 141, 159,  89,  75,  61,   6,   6,   6, 112,  82,   6,   6,   6,   6,   6,   7,   6,   6,   6,   6,   6,  40,   6,  55,  56,  57,  59 },
-    {  6,   6,   6,   6,   6,   6,  48,  49,  50,  52,   6,   6,   6,   6, 160, 155, 156, 157, 158, 129, 129, 140, 129, 130, 118,  45,  89,  75,  61,   6,   6, 122, 123,  95,  95,  82,   7,   6,   6,   7,   7,   6,   7,   6,   6,   6,  65,  66,  67,  69 },
-    {  6,  76,  77,  78,  79,  77, 161, 162, 163,  78,  79,  80, 134,   6,   6, 160, 155, 156, 157, 158, 129, 129, 129, 129, 130, 118,  45,  89,  75,   6,   6,   6, 136,  12,  12,  81,  82,   6,   7,   6,   6,   6,   6,   6,   6,   6,   6,   6,   6,   6 },
-    {  6,  90,  91,  92,  93,  91,  92,  93,  91,  92,  93,  94, 134, 134,   6,   6, 160, 155, 156, 157, 158, 129, 164, 165, 129, 130, 118, 131, 132,   6,   6,   7, 147,  83,  83,  45,  81,  82,   6,   6,   6,   6,   6,   6,   6,   6,   6,   6,   6,   6 },
-    {  6, 107,   4,   2,   3,   4,   2,   3,   4,   2,   3,   5, 134,   6,   6,   6,   6, 160, 155, 156, 157, 158, 166, 167, 129, 129, 141, 142, 132,   6,   7,   6,   6,   6,   6,  53,  45,  81,  95,  95,  95,  95,  95,  82,   6,   6,   6,   7, 134,   6 },
-    {  6, 168, 169, 170,  24, 169, 171,  20,  21,  22,  20, 145, 146, 134,   6,   6,   6,   7, 160, 155, 156, 157, 172, 173, 173, 174, 175, 176, 177,   6,  39,  40,   6,   6,   6,   6,  53,  45,  12,  12,  12,  12,  12,  81,  82,   6,   6, 134,   7,   6 },
-    {  6,   6, 178, 179,  36, 178,  31,  32,  33,  34,  32,  33, 150, 134, 134,   6,   7,   6,   6, 160, 155, 156, 180, 181, 181, 182, 176, 177, 183,   6,  38,  38,   6, 134,   6,   6,   6,  53,  83,  83,  83,  83,  83,  45,  81,  82,   7,   6,   6,  99 },
-    {  6,   6, 184,   6,   6,   6,  48,  49,  50,  51,  49,  50,  52, 134,   7,   6,  38,  39,  39,  40, 160, 155, 185, 185, 185, 185, 177, 183,   7,   6,  38,  39,   6,   7,   6,   6,   6,   6,   6,   6,   6,   6,   6,  53,  45,  81,  95,  95,  95,  96 },
-    { 85,   6, 184, 184,   6, 184,  55,  56,  57,  58,  56,  57,  59, 134,   6,   7,  39,  39,  38,  38,   6, 160, 186, 186, 186, 186, 183,   6,   6,   7,  39,  39,   7,   6,   6,   6,   6,   6,   6,   6,   6,   6,   6,   6,  53,  45,  12,  12,  12,  13 },
-    {102,  85,  84,  85,   6,   6,  65,  66,  67,  68,  66,  67,  69,   6,   6,   6,  39,  40,   6,   6,   6,   6,   6,   6, 187, 188,   6,   6, 189,   6,   6,   6,   6, 187, 190, 191, 188,   6,   6,   6,   6,   6,   6,   6,   6,  53,  83,  83,  83,  62 },
-    {192, 102, 101, 102,  85,   6,   6,   6,   6,   6,   6,   6,   6,   6,   6,   6,  38,  38,   6, 187, 193, 103, 194, 190, 101, 102, 194, 188,   6,   6,   6, 187, 193, 101, 192, 192, 195, 191, 188,   6,   6,  84,  85,   6,   6,   6,   6,   6,   6,   6 },
-    {192, 192, 192, 192, 102, 103, 103, 103, 103, 103, 103, 103, 103, 194, 188,  84, 103, 103, 103, 101, 192, 192, 192, 196, 113, 197, 192, 195, 103, 103, 103, 101, 192, 192, 192, 192, 192, 192, 102, 103, 103, 101, 102, 103, 103, 103, 103, 103, 103, 103 },
-    {113, 113, 113, 113, 113, 113, 113, 113, 113, 113, 113, 113, 197, 192, 195, 198, 196, 113, 113, 113, 113, 113, 199, 200,   6, 201, 202, 113, 113, 113, 203, 192, 192, 192, 192, 196, 113, 113, 113, 113, 113, 113, 113, 113, 197, 204, 192, 192, 192, 204 },
-    {  6,   6,   6,   6,   6,   6,   6,   6,   6,   6,   6,   6,  63, 113, 113, 199, 200,   6,   6,   6,   6,   6,   6,   6,   6,   6,   6,   6,   6,   6,  63, 113, 113, 113, 113,  64,   6,   6,   6,   6,   6,   6,   6,   6,  63, 113, 113, 113, 113, 113 },
-    { 78,  79,  77,  78,  79,  77,  78,  79,  77,  78,  79,  77,  78,  79,  80,   6,   6,   6,   6,   6,   6,   6, 134, 134,   6,   6, 134, 134,   6,  76,  77,  78,  79,  80,   6,   6,   6,  60, 124, 124, 124, 124, 124, 124, 124, 124, 124, 124, 124, 124 },
-    { 92,  93,  91,  92,  93,  91,  92,  93,  91,  92,  93,  91,  92,  93,  94,   6,   6,   6,   6,   6,   6,   6,   6,   6, 134,   6,   6, 134,   6,  90,  91,  92,  93,  94,   6,   6,  60,  70, 137, 137, 137, 137, 137, 137, 137, 137, 137, 137, 137, 137 },
-    {  2,   3,   4,   2,   3,   4,   2,   3,   4,   2,   3,   4,   2,   3,   5,   6,   6,   6,   6,   6,   6,  76,  77,  78,  79,  80,   6,   6,   6, 107,   4,   2,   3,   5,   6,  60,  70,  86,  12,  12,  12,  12,  12,  12,  12,  12,  12,  12,  12,  12 },
-    { 22,  20,  21,  22,  20,  21,  22,  20,  21,  22,  20,  21,  22,  20, 145, 146,   6,   6,   6,   6,   6,  90,  91,  92,  93,  94,   6,   6, 119, 120,  21,  22,  20, 145, 146,  70,  86,  13, 104, 104, 104, 104, 104, 104, 104, 104, 104, 104, 104, 104 },
-    { 34,  32,  33,  34,  32,  33,  34,  32,  33,  34,  32,  33,  34,  32,  33, 150,   6,   6,   6,   6,   6, 107,   4,   2,   3,   5,   6,   6, 133,  32,  33,  34,  32,  33, 150, 125, 126, 114, 115, 115, 115, 115, 115, 115, 115, 115, 115, 115, 115, 115 },
-    { 51,  49,  50,  51,  49,  50,  51,  49,  50,  51,  49,  50,  51,  49,  50,  52,   6,   6,   6,   7,   6, 168, 169, 170,  24,  25,   6,   6,  48,  49,  50,  51,  49,  50,  52, 125, 138, 139, 129, 140, 129, 129, 129, 128, 129, 129, 129, 129, 129, 140 },
-    { 58,  56,  57,  58, 205, 163, 206, 162, 163, 206, 162, 163, 206, 162, 207,  59,   6,   6,   6,   6,   6,   6, 178, 179,  36,   6,   7,   6,  55,  56,  57,  58,  56,  57,  59, 125, 138, 139, 129, 129, 129, 129, 129, 129, 208, 173, 173, 173, 173, 173 },
-    { 68,  66,  67,  68, 209,  91,  92,  93,  91,  92,  93,  91,  92,  93, 210,  69,   6,   6, 134,   6,   6,   6,   6,   6,   6,   6,   6,   6,  65,  66,  67,  68,  66,  67,  69, 125, 138, 139, 129, 129, 129, 140, 129, 211, 212, 181, 181, 181, 181, 181 }
-};
-
-
-
-/****************************/
-/*     STRUCTURE ACTEUR     */
-/****************************/
-
-// données personnelles de chaque acteur qui se déplace
-typedef struct acteur
-{
-    int x, y;          // coordonnées (en pixels) des pieds de l'acteur
-    BITMAP *img;       // image de l'acteur
-} t_acteur;
-
-
-/******************************************/
-/*         SOUS-PROGRAMMES                */
-/******************************************/
-
-// Dessine la tuile numéro ituile sur la bitmap bmp au coordonnées xmap ymap
-// (unité en nombre de tuiles, pas en pixels)
-void dessineTuile(BITMAP *bmp, int ituile, int xmap, int ymap){
-    int lig, col; // ligne et colonne de la tuile source dans tableTuiles
-
-    // Le numéro de ligne et de colonne dans un tableau 2D
-    // à partir de l'indice du ième élément (en comptant de gauche à droite
-    // et de haut en bas) s'obtiennent avec le quotient et le reste
-    // dans la division de l'indice par le nombre de colonnes du tableau
-    lig = ituile / NCOLTUILE;
-    col = ituile % NCOLTUILE;
-
-    // on copie juste le morceau concerné
-    blit(tableTuiles, bmp, col*TXTUILE, lig*TYTUILE,
-         xmap*TXTUILE, ymap*TYTUILE, TXTUILE, TYTUILE);
-
-    // pour visualiser les types de tuiles (obstacle, eau)
-    // ( à enlever pour un programme finalisé...)
-    if (key[KEY_SPACE])
-    {
-        if (typeTuiles[ituile]==1)
-            rect(bmp, xmap*TXTUILE, ymap*TYTUILE, xmap*TXTUILE+TXTUILE-1, ymap*TYTUILE +TYTUILE-1, makecol(255,0,0));
-        if (typeTuiles[ituile]==2)
-            rect(bmp, xmap*TXTUILE, ymap*TYTUILE, xmap*TXTUILE+TXTUILE-1, ymap*TYTUILE +TYTUILE-1, makecol(0,0,255));
-    }
-}
-
-// Dessine un terrain complet sur une bitmap
-void dessineTerrain(BITMAP *bmp, int terrain[NYMAP][NXMAP]){
-    int xmap,ymap;
-
-    for (ymap=0;ymap<NYMAP;ymap++)
-            for (xmap=0;xmap<NXMAP;xmap++)
-                dessineTuile(bmp,terrain[ymap][xmap],xmap,ymap);
-}
-
-// Tester si le déplacement dx dy ammène sur une tuile du type indiqué
-// Si le type indiqué est 1 (obstacle) alors un déplacement
-// en dehors du terrain retourne également vrai
-// Retourne OUI : 1   NON : 0
-int typeTerrain(t_acteur *acteur, int dx, int dy, int type){
-    int xmap,ymap,ituile; // Coordonnées matrice et numéro de tuile
-    int decx,decy;        // Pour visiter les coins...
-    int cx,cy;            // Coordonnées des coins (en pixels)
-
-    // Pour chacun des 4 coins...
-    for (decy=-TYTUILE/2; decy<TYTUILE/2; decy+=TYTUILE-1)
-        for (decx=-TXTUILE/2; decx<TXTUILE/2; decx+=TXTUILE-1)
-        {
-            // Coord. du coin
-            cx=acteur->x+dx+decx;
-            cy=acteur->y+dy+decy;
-
-            // Si on sort du terrain...
-            if (cx<0 || cx>=NXMAP*TXTUILE || cy<0 || cy>=NYMAP*TYTUILE)
-            {
-                if (type==1)  return 1;  // Oui c'est un obstacle
-                else  return 0;          // Non ce n'est pas autre chose...
-            }
-
-            // Trouver les coordonnées matrice
-            xmap=cx/TXTUILE;
-            ymap=cy/TYTUILE;
-
-            // Récupérer le numéro de tuile sur laquelle on arrive
-            ituile=terrain[ymap][xmap];
-
-            // Retourner OUI si le type de la tuile est bien celui recherché
-            if (typeTuiles[ituile]==type)
-                return 1;
-        }
-
-    // Donc NON, on n'a pas trouvé le type recherché
-    return 0;
-}
-
-// Chargement "sécurisé" d'une image :
-// interrompt le programme avec un message si problème...
-BITMAP * load_bitmap_check(char *nomImage){
-    BITMAP *bmp;
-    bmp=load_bitmap(nomImage,NULL);
-    if (!bmp)
-    {
-        allegro_message("pas pu trouver %s",nomImage);
-        exit(EXIT_FAILURE);
-    }
-    return bmp;
-}
 
 
 /******************************************/
@@ -207,8 +30,14 @@ BITMAP * load_bitmap_check(char *nomImage){
 
 int main()
 {
-    t_acteur *acteur;    // Un acteur (à créer)
+    //Joueur Joueures[4];//
+    t_acteur *acteur1;    // Un acteur (à créer)
+    t_acteur *acteur2;    // Un acteur (à créer)
+    t_acteur *acteur3;    // Un acteur (à créer)
+    t_acteur *acteur4;    // Un acteur (à créer)
     BITMAP *page;// BITMAP buffer d'affichage
+    int findetous=0,fin=0,fin1=0,fin2=0,fin3=0,nbjoueur=0;
+    int i=0,j=0;
 
     // Lancer allegro et le mode graphique
     allegro_init();
@@ -216,7 +45,7 @@ int main()
     install_mouse();
 
     set_color_depth(desktop_color_depth());
-    if (set_gfx_mode(GFX_AUTODETECT_WINDOWED,800,650,0,0)!=0)
+    if (set_gfx_mode(GFX_AUTODETECT_WINDOWED,800,700,0,0)!=0)
     {
         allegro_message("prb gfx mode");
         allegro_exit();
@@ -236,63 +65,642 @@ int main()
     tableTuiles=load_bitmap_check("tableTuiles.bmp");
 
     // Allocation et initialisation des paramètres de l'acteur :
-    acteur = (t_acteur *)malloc(1*sizeof(t_acteur));
+    acteur1 = (t_acteur *)malloc(1*sizeof(t_acteur));
     // Pour la position : multiples de l'unité de déplacement...
-    acteur->x = 32;     acteur->y = 200;
-    acteur->img = load_bitmap_check("sprite.bmp");
+    acteur1->x = 32;     acteur1->y = 200;
+    //acteur1->img = load_bitmap_check("sprite.bmp");
 
-    textprintf_ex(page,font,4,6,makecol(255,0,0),makecol(0,255,0),"EXIT");
+    // Allocation et initialisation des paramètres de l'acteur :
+    acteur2 = (t_acteur *)malloc(1*sizeof(t_acteur));
+    // Pour la position : multiples de l'unité de déplacement...
+    acteur2->x = 470;     acteur2->y = 45;
+    //acteur2->img = load_bitmap_check("sprite.bmp");
+
+    // Allocation et initialisation des paramètres de l'acteur :
+    acteur3 = (t_acteur *)malloc(1*sizeof(t_acteur));
+    // Pour la position : multiples de l'unité de déplacement...
+    acteur3->x = 760;     acteur3->y = 420;
+    //acteur3->img = load_bitmap_check("sprite.bmp");
+
+    // Allocation et initialisation des paramètres de l'acteur :
+    acteur4 = (t_acteur *)malloc(1*sizeof(t_acteur));
+    // Pour la position : multiples de l'unité de déplacement...
+    acteur4->x = 295;     acteur4->y = 530;
+    //acteur4->img = load_bitmap_check("sprite.bmp");
 
 
-
-    // Boucle de jeu (rien pour l'instant)
-    while (!key[KEY_ESC])
+        while ((!fin))
     {
-        // dessiner le terrain
-        dessineTerrain(page, terrain);
 
-        //( mouse_b&1 && mouse_x<=40 && mouse_y<=20)
+        // Menu 1 :
+        // Info curseur
+        textprintf_ex(page,font,690,635,makecol(0,255,0),makecol(0,0,0),"x=%4d y=%4d",mouse_x,mouse_y);
 
-        // gérer déplacements en prenant en compte les obstacles
-        if (    key[KEY_RIGHT] && !typeTerrain(acteur,4,0,1) )
-            acteur->x+=4;
+       // Bord console utilisateur
+        rect(page,0,0,800,650,makecol(0,255,0 ));
+        rect(page,1,1,799,649,makecol(0,255,0 ));
+        rect(page,2,2,798,648,makecol(0,255,0 ));
+        rect(page,3,3,797,647,makecol(0,255,0 ));
 
-        if (    key[KEY_LEFT] && !typeTerrain(acteur,-4,0,1) )
-           acteur->x-=4;
+        //boutons
+        rect(page,300,150,500,250,makecol(0,255,0 ));//rectangle boutons jouer
+        rect(page,300,350,500,450,makecol(0,255,0 ));//rectangle boutons quitter
+        textprintf_centre_ex(page,font,400,200,makecol(0,255,0),0,"Jouer");//texte boutons jouer
+        textprintf_centre_ex(page,font,400,400,makecol(0,255,0),0,"Quitter");//texte boutons quitter
 
-        if (    key[KEY_DOWN] && !typeTerrain(acteur,0,4,1) )
-           acteur->y+=4;
 
-        if (    key[KEY_UP] && !typeTerrain(acteur,0,-4,1) )
-           acteur->y-=4;
 
-        // détecter interactions avec des éléments spéciaux
-        if ( typeTerrain(acteur,0,0,2) ) // dans l'eau ?
-            textprintf_centre_ex(page,font,400,560,makecol(255,255,255),0," NAGE ");
-        else
-            textprintf_centre_ex(page,font,400,560,makecol(255,255,255),0,"MARCHE");
+        // les clics
+        if (mouse_b & 1 && mouse_x<=500 && mouse_x>=300 && mouse_y<=250 && mouse_y>=150)  // gauche : dessiner en rouge
+            {
+                fin=1;
+            }
 
-        textprintf_ex(page,font,0,580,makecol(255,0,0),makecol(0,255,0),"Joueur 1:");
-        textprintf_ex(page,font,0,600,makecol(255,0,0),makecol(0,255,0),"PV:|||||||||||||||||||||||||||||");
-        textprintf_ex(page,font,0,620,makecol(255,0,0),makecol(0,255,0),"PM:|||");
-        textprintf_centre_ex(page,font,400,580,makecol(255,255,255),0,"Z");
-        textprintf_centre_ex(page,font,400,600,makecol(255,255,255),0,"S");
-        textprintf_centre_ex(page,font,390,590,makecol(255,255,255),0,"Q");
-        textprintf_centre_ex(page,font,410,590,makecol(255,255,255),0,"D");
-        textprintf_centre_ex(page,font,350,630,makecol(255,255,255),0,"Arme");
-        textprintf_centre_ex(page,font,450,630,makecol(255,255,255),0,"Sort");
-        textprintf_right_ex(page,font,600,580,makecol(255,0,0),makecol(0,255,0),"Ennemi :");
-        textprintf_right_ex(page,font,792,600,makecol(255,0,0),makecol(0,255,0),"PV:|||||||||||||||||||||||||||||");
+        // prise en compte effective de la zone cliquable EXIT :
+        // clic sur la case -> fin du programme
+        if (mouse_b & 1 && mouse_x<=500 && mouse_x>=300 && mouse_y<=450 && mouse_y>=350) // droit : dessiner en bleu
+            {
+                fin=1;
+                findetous=1;
+            }
 
-        // afficher personnage (positionner par rapport à ses jambes)
-        draw_sprite(page, acteur->img, acteur->x - acteur->img->w/2, acteur->y - acteur->img->h + 8);
 
-        // affichage du buffer mis a jour a l'ecran
+        // Affichage du buffer mis a jour a l'ecran
         blit(page,screen,0,0,0,0,SCREEN_W,SCREEN_H);
 
-        // on fait une petite pause
+        // On fait une petite pause
         rest(15);
 
+
+    }
+
+
+     // Boucle de jeu (rien pour l'instant)
+    while (!findetous)
+    {
+
+      while ((!fin1))
+    {
+        clear_bitmap(page);
+
+        // Menu 2 : Selection des joueurs
+        // Info curseur
+        textprintf_ex(page,font,690,635,makecol(0,255,0),makecol(0,0,0),"x=%4d y=%4d",mouse_x,mouse_y);
+
+       // Bord console utilisateur
+        rect(page,0,0,800,650,makecol(0,255,0 ));
+        rect(page,1,1,799,649,makecol(0,255,0 ));
+        rect(page,2,2,798,648,makecol(0,255,0 ));
+        rect(page,3,3,797,647,makecol(0,255,0 ));
+
+        //boutons
+        textprintf_centre_ex(page,font,400,200,makecol(0,255,0),0,"Nombre de joueurs :");//texte boutons jouer
+
+        rect(page,275,300,325,350,makecol(0,255,0 ));//rectangle boutons 2
+        rect(page,375,300,425,350,makecol(0,255,0 ));//rectangle boutons 3
+        rect(page,475,300,525,350,makecol(0,255,0 ));//rectangle boutons 4
+
+        textprintf_centre_ex(page,font,300,320,makecol(0,255,0),0,"2");//texte boutons 2
+        textprintf_centre_ex(page,font,400,320,makecol(0,255,0),0,"3");//texte boutons 3
+        textprintf_centre_ex(page,font,500,320,makecol(0,255,0),0,"4");//texte boutons 4
+
+        // prise en compte effective de la zone cliquable 2 :
+        // clic sur la case 2-> nombre de joueur 2
+        if (mouse_b & 1 && mouse_x<=325 && mouse_x>=275 && mouse_y<=350 && mouse_y>=300) // droit : dessiner en bleu
+            {
+                nbjoueur=2;
+                initialiseJoueurs(nbjoueur);
+                fin1=1;
+            }
+
+        // prise en compte effective de la zone cliquable 3 :
+        // clic sur la case 3-> nombre de joueur 3
+        if (mouse_b & 1 && mouse_x<=425 && mouse_x>=375 && mouse_y<=350 && mouse_y>=300)  // gauche : dessiner en rouge
+            {
+                nbjoueur=3;
+                initialiseJoueurs(nbjoueur);
+                fin1=1;
+            }
+
+        // prise en compte effective de la zone cliquable 4 :
+        // clic sur la case 4-> nombre de joueur 4
+        if (mouse_b & 1 && mouse_x<=525 && mouse_x>=475 && mouse_y<=350 && mouse_y>=300) // droit : dessiner en bleu
+            {
+                nbjoueur=4;
+                initialiseJoueurs(nbjoueur);
+                fin1=1;
+            }
+
+        // Affichage du buffer mis a jour a l'ecran
+        blit(page,screen,0,0,0,0,SCREEN_W,SCREEN_H);
+
+        // On fait une petite pause
+        rest(15);
+    }
+      while ((!fin2))
+    {
+        // On fait une petite pause
+        rest(500);
+      for(i=0;i<nbjoueur;)
+    {
+
+        clear_bitmap(page);
+
+        // Menu 3 : Selection des classes
+        // Info curseur
+        textprintf_ex(page,font,690,635,makecol(0,255,0),makecol(0,0,0),"x=%4d y=%4d",mouse_x,mouse_y);
+
+       // Bord console utilisateur
+        rect(page,0,0,800,650,makecol(0,255,0 ));
+        rect(page,1,1,799,649,makecol(0,255,0 ));
+        rect(page,2,2,798,648,makecol(0,255,0 ));
+        rect(page,3,3,797,647,makecol(0,255,0 ));
+
+        //boutons
+        textprintf_centre_ex(page,font,400,25,makecol(0,255,0),0,"Choix de la classe du joueurs %d:",i+1);//texte boutons jouer
+        rect(page,25,50,775,175,makecol(0,255,0 ));//rectangle boutons classe 1
+        rect(page,25,200,775,325,makecol(0,255,0 ));//rectangle boutons classe 2
+        rect(page,25,350,775,475,makecol(0,255,0 ));//rectangle boutons classe 3
+        rect(page,25,500,775,625,makecol(0,255,0 ));//rectangle boutons classe 4
+        textprintf_ex(page,font,30,55,makecol(0,255,0),0,"Classe 1:");//texte boutons 1
+        textprintf_ex(page,font,30,205,makecol(0,255,0),0,"Classe 2:");//texte boutons 2
+        textprintf_ex(page,font,30,355,makecol(0,255,0),0,"Classe 3:");//texte boutons 3
+        textprintf_ex(page,font,30,505,makecol(0,255,0),0,"Classe 4:");//texte boutons 4
+
+        textprintf_ex(page,font,30,80,makecol(0,255,0),0,"PV : %d");//texte boutons 1
+        textprintf_ex(page,font,30,230,makecol(0,255,0),0,"PV : %d");//texte boutons 2
+        textprintf_ex(page,font,30,380,makecol(0,255,0),0,"PV : %d");//texte boutons 3
+        textprintf_ex(page,font,30,530,makecol(0,255,0),0,"PV : %d");//texte boutons 4
+
+        textprintf_ex(page,font,30,105,makecol(0,255,0),0,"PM : %d");//texte boutons 1
+        textprintf_ex(page,font,30,255,makecol(0,255,0),0,"PM : %d");//texte boutons 2
+        textprintf_ex(page,font,30,405,makecol(0,255,0),0,"PM : %d");//texte boutons 3
+        textprintf_ex(page,font,30,555,makecol(0,255,0),0,"PM : %d");//texte boutons 4
+
+        textprintf_ex(page,font,30,130,makecol(0,255,0),0,"PA : %d");//texte boutons 1
+        textprintf_ex(page,font,30,280,makecol(0,255,0),0,"PA : %d");//texte boutons 2
+        textprintf_ex(page,font,30,430,makecol(0,255,0),0,"PA : %d");//texte boutons 3
+        textprintf_ex(page,font,30,580,makecol(0,255,0),0,"PA : %d");//texte boutons 4
+
+        textprintf_ex(page,font,150,65,makecol(0,255,0),0,"Sort 1 : ");//texte boutons 1
+        textprintf_ex(page,font,150,215,makecol(0,255,0),0,"Sort 1 : ");//texte boutons 2
+        textprintf_ex(page,font,150,365,makecol(0,255,0),0,"Sort 1 : ");//texte boutons 3
+        textprintf_ex(page,font,150,515,makecol(0,255,0),0,"Sort 1 : ");//texte boutons 4
+
+        textprintf_ex(page,font,150,80,makecol(0,255,0),0,"Conso.PA: %d");//texte boutons 1
+        textprintf_ex(page,font,150,230,makecol(0,255,0),0,"Conso.PA: %d");//texte boutons 2
+        textprintf_ex(page,font,150,380,makecol(0,255,0),0,"Conso.PA: %d");//texte boutons 3
+        textprintf_ex(page,font,150,530,makecol(0,255,0),0,"Conso.PA: %d");//texte boutons 4
+
+        textprintf_ex(page,font,275,65,makecol(0,255,0),0,"Sort 2 : ");//texte boutons 1
+        textprintf_ex(page,font,275,215,makecol(0,255,0),0,"Sort 2 : ");//texte boutons 2
+        textprintf_ex(page,font,275,365,makecol(0,255,0),0,"Sort 2 : ");//texte boutons 3
+        textprintf_ex(page,font,275,515,makecol(0,255,0),0,"Sort 2 : ");//texte boutons 4
+
+        textprintf_ex(page,font,275,80,makecol(0,255,0),0,"Conso.PA: %d");//texte boutons 1
+        textprintf_ex(page,font,275,230,makecol(0,255,0),0,"Conso.PA: %d");//texte boutons 2
+        textprintf_ex(page,font,275,380,makecol(0,255,0),0,"Conso.PA: %d");//texte boutons 3
+        textprintf_ex(page,font,275,530,makecol(0,255,0),0,"Conso.PA: %d");//texte boutons 4
+
+        textprintf_ex(page,font,400,65,makecol(0,255,0),0,"Sort 3 : ");//texte boutons 1
+        textprintf_ex(page,font,400,215,makecol(0,255,0),0,"Sort 3 : ");//texte boutons 2
+        textprintf_ex(page,font,400,365,makecol(0,255,0),0,"Sort 3 : ");//texte boutons 3
+        textprintf_ex(page,font,400,515,makecol(0,255,0),0,"Sort 3 : ");//texte boutons 4
+
+        textprintf_ex(page,font,400,80,makecol(0,255,0),0,"Conso.PA: %d");//texte boutons 1
+        textprintf_ex(page,font,400,230,makecol(0,255,0),0,"Conso.PA: %d");//texte boutons 2
+        textprintf_ex(page,font,400,380,makecol(0,255,0),0,"Conso.PA: %d");//texte boutons 3
+        textprintf_ex(page,font,400,530,makecol(0,255,0),0,"Conso.PA: %d");//texte boutons 4
+
+        textprintf_ex(page,font,525,65,makecol(0,255,0),0,"Sort 4 : ");//texte boutons 1
+        textprintf_ex(page,font,525,215,makecol(0,255,0),0,"Sort 4 : ");//texte boutons 2
+        textprintf_ex(page,font,525,365,makecol(0,255,0),0,"Sort 4 : ");//texte boutons 3
+        textprintf_ex(page,font,525,515,makecol(0,255,0),0,"Sort 4 : ");//texte boutons 4
+
+        textprintf_ex(page,font,525,80,makecol(0,255,0),0,"Conso.PA: %d");//texte boutons 1
+        textprintf_ex(page,font,525,230,makecol(0,255,0),0,"Conso.PA: %d");//texte boutons 2
+        textprintf_ex(page,font,525,380,makecol(0,255,0),0,"Conso.PA: %d");//texte boutons 3
+        textprintf_ex(page,font,525,530,makecol(0,255,0),0,"Conso.PA: %d");//texte boutons 4
+
+        textprintf_ex(page,font,650,65,makecol(0,255,0),0,"Attaque : ");//texte boutons 1
+        textprintf_ex(page,font,650,215,makecol(0,255,0),0,"Attaque : ");//texte boutons 2
+        textprintf_ex(page,font,650,365,makecol(0,255,0),0,"Attaque : ");//texte boutons 3
+        textprintf_ex(page,font,650,515,makecol(0,255,0),0,"Attaque : ");//texte boutons 4
+
+        textprintf_ex(page,font,650,80,makecol(0,255,0),0,"Conso.PA: %d");//texte boutons 1
+        textprintf_ex(page,font,650,230,makecol(0,255,0),0,"Conso.PA: %d");//texte boutons 2
+        textprintf_ex(page,font,650,380,makecol(0,255,0),0,"Conso.PA: %d");//texte boutons 3
+        textprintf_ex(page,font,650,530,makecol(0,255,0),0,"Conso.PA: %d");//texte boutons 4
+
+        // prise en compte effective de la zone cliquable 2 :
+        // clic sur la case 2-> nombre de joueur 2
+        if (mouse_b & 1 && mouse_x<=775 && mouse_x>=25 && mouse_y<=175 && mouse_y>=50) // droit : dessiner en bleu
+            {
+                Joueures[i].classe=1;
+                if (i==0)
+                {
+                    acteur1->img = load_bitmap_check("sprite.bmp");
+                }
+                if (i==1)
+                {
+                    acteur2->img = load_bitmap_check("sprite.bmp");
+                }
+                if (i==2)
+                {
+                    acteur3->img = load_bitmap_check("sprite.bmp");
+                }
+                if (i==3)
+                {
+                    acteur4->img = load_bitmap_check("sprite.bmp");
+                }
+                i++;
+            }
+
+        // prise en compte effective de la zone cliquable 3 :
+        // clic sur la case 3-> nombre de joueur 3
+        if (mouse_b & 1 && mouse_x<=775 && mouse_x>=25 && mouse_y<=325 && mouse_y>=200)  // gauche : dessiner en rouge
+            {
+                Joueures[i].classe=2;
+                if (i==0)
+                {
+                    acteur1->img = load_bitmap_check("sprite.bmp");
+                }
+                if (i==1)
+                {
+                    acteur2->img = load_bitmap_check("sprite.bmp");
+                }
+                if (i==2)
+                {
+                    acteur3->img = load_bitmap_check("sprite.bmp");
+                }
+                if (i==3)
+                {
+                    acteur4->img = load_bitmap_check("sprite.bmp");
+                }
+                i++;
+            }
+
+        // prise en compte effective de la zone cliquable 4 :
+        // clic sur la case 4-> nombre de joueur 4
+        if (mouse_b & 1 && mouse_x<=775 && mouse_x>=25 && mouse_y<=475 && mouse_y>=350) // droit : dessiner en bleu
+            {
+                Joueures[i].classe=3;
+                if (i==0)
+                {
+                    acteur1->img = load_bitmap_check("sprite.bmp");
+                }
+                if (i==1)
+                {
+                    acteur2->img = load_bitmap_check("sprite.bmp");
+                }
+                if (i==2)
+                {
+                    acteur3->img = load_bitmap_check("sprite.bmp");
+                }
+                if (i==3)
+                {
+                    acteur4->img = load_bitmap_check("sprite.bmp");
+                }
+                i++;
+            }
+
+        // prise en compte effective de la zone cliquable 4 :
+        // clic sur la case 4-> nombre de joueur 4
+        if (mouse_b & 1 && mouse_x<=775 && mouse_x>=25 && mouse_y<=625 && mouse_y>=500) // droit : dessiner en bleu
+            {
+                Joueures[i].classe=4;
+                if (i==0)
+                {
+                    acteur1->img = load_bitmap_check("sprite.bmp");
+                }
+                if (i==1)
+                {
+                    acteur2->img = load_bitmap_check("sprite.bmp");
+                }
+                if (i==2)
+                {
+                    acteur3->img = load_bitmap_check("sprite.bmp");
+                }
+                if (i==3)
+                {
+                    acteur4->img = load_bitmap_check("sprite.bmp");
+                }
+                i++;
+            }
+
+        // Affichage du buffer mis a jour a l'ecran
+        blit(page,screen,0,0,0,0,SCREEN_W,SCREEN_H);
+
+        // On fait une petite pause
+        rest(250);
+
+    }
+    fin2=1;
+    }
+
+
+    while ((!fin3))
+    {
+        for(j=0;((j<nbjoueur)&&((Joueures[j].pv)>0));)
+    {
+        clear_bitmap(page);
+
+        // Dessiner le terrain
+        dessineTerrain(page, terrain);
+
+        //( mouse_b&1 && mouse_x<=40 && mouse_x>=390 && mouse_y<=20 && mouse_y>=20)
+
+        // Gérer déplacements en prenant en compte les obstacles
+
+        if ((    key[KEY_RIGHT] && !typeTerrain(acteur1,4,0,1) && j==0))//droite
+            acteur1->x+=4;
+
+        if ((    key[KEY_LEFT] && !typeTerrain(acteur1,-4,0,1) && j==0))//gauche
+           acteur1->x-=4;
+
+        if ((    key[KEY_DOWN] && !typeTerrain(acteur1,0,4,1) && j==0))//bas
+           acteur1->y+=4;
+
+        if ((    key[KEY_UP] && !typeTerrain(acteur1,0,-4,1) && j==0))//haut
+           acteur1->y-=4;
+
+
+
+        if ((    key[KEY_RIGHT] && !typeTerrain(acteur2,4,0,1) && j==1))//droite
+            acteur2->x+=4;
+
+        if ((    key[KEY_LEFT] && !typeTerrain(acteur2,-4,0,1) && j==1))//gauche
+           acteur2->x-=4;
+
+        if ((    key[KEY_DOWN] && !typeTerrain(acteur2,0,4,1) && j==1))//bas
+           acteur2->y+=4;
+
+        if ((    key[KEY_UP] && !typeTerrain(acteur2,0,-4,1) && j==1))//haut
+           acteur2->y-=4;
+
+
+
+        if ((    key[KEY_RIGHT] && !typeTerrain(acteur3,4,0,1) && j==2))//droite
+            acteur3->x+=4;
+
+        if ((    key[KEY_LEFT] && !typeTerrain(acteur3,-4,0,1) && j==2))//gauche
+           acteur3->x-=4;
+
+        if ((    key[KEY_DOWN] && !typeTerrain(acteur3,0,4,1) && j==2))//bas
+           acteur3->y+=4;
+
+        if ((    key[KEY_UP] && !typeTerrain(acteur3,0,-4,1) && j==2))//haut
+           acteur3->y-=4;
+
+
+
+        if ((    key[KEY_RIGHT] && !typeTerrain(acteur4,4,0,1) && j==3))//droite
+            acteur4->x+=4;
+
+        if ((    key[KEY_LEFT] && !typeTerrain(acteur4,-4,0,1) && j==3))//gauche
+           acteur4->x-=4;
+
+        if ((    key[KEY_DOWN] && !typeTerrain(acteur4,0,4,1) && j==3))//bas
+           acteur4->y+=4;
+
+        if ((    key[KEY_UP] && !typeTerrain(acteur4,0,-4,1) && j==3))//haut
+           acteur4->y-=4;
+
+        // Détecter interactions avec des éléments spéciaux
+        if ( typeTerrain(acteur1,0,0,2) ) // dans l'eau ?
+            textprintf_centre_ex(page,font,400,565,makecol(255,255,255),0," NAGE ");
+        else
+            textprintf_centre_ex(page,font,400,565,makecol(255,255,255),0,"MARCHE");
+
+        if ( typeTerrain(acteur2,0,0,2) ) // dans l'eau ?
+            textprintf_centre_ex(page,font,400,565,makecol(255,255,255),0," NAGE ");
+        else
+            textprintf_centre_ex(page,font,400,565,makecol(255,255,255),0,"MARCHE");
+
+        if ( typeTerrain(acteur3,0,0,2) ) // dans l'eau ?
+            textprintf_centre_ex(page,font,400,565,makecol(255,255,255),0," NAGE ");
+        else
+            textprintf_centre_ex(page,font,400,565,makecol(255,255,255),0,"MARCHE");
+
+        if ( typeTerrain(acteur4,0,0,2) ) // dans l'eau ?
+            textprintf_centre_ex(page,font,400,565,makecol(255,255,255),0," NAGE ");
+        else
+            textprintf_centre_ex(page,font,400,565,makecol(255,255,255),0,"MARCHE");
+
+
+        // Infos joueur
+        textprintf_ex(page,font,5,580,makecol(255,0,0),makecol(0,255,0),"Joueur %d:",j+1);
+        textprintf_ex(page,font,5,600,makecol(255,0,0),makecol(0,255,0),"PV: %d",Joueures[j].pv);
+        textprintf_ex(page,font,100,600,makecol(255,0,0),makecol(0,255,0),"Compte: %d $",Joueures[j].compte);
+        textprintf_ex(page,font,5,620,makecol(255,0,0),makecol(0,255,0),"PM: %d",Joueures[j].pm);
+        textprintf_ex(page,font,5,640,makecol(255,0,0),makecol(0,255,0),"PA: %d",Joueures[j].pa);
+
+        rectfill(page,10,655,130,668,makecol(0,255,0));
+        textprintf_ex(page,font,15,658,makecol(255,0,0),makecol(0,255,0),"Joueur Suivant");
+        if( mouse_b&1 && mouse_x<=130 && mouse_x>=10 && mouse_y<=668 && mouse_y>=655)
+        {
+            j++;
+        }
+        rectfill(page,10,675,50,690,makecol(0,255,0));
+        textprintf_ex(page,font,15,680,makecol(255,0,0),makecol(0,255,0),"Menu");
+        if( mouse_b&1 && mouse_x<=50 && mouse_x>=10 && mouse_y<=690 && mouse_y>=675)
+        {
+            fin3=1;
+        }
+
+
+        // Commande
+
+        /*// bouton hauts
+        rectfill(page,390,588,410,598,makecol(0,128,0 ));
+        textprintf_centre_ex(page,font,400,590,makecol(255,255,255),0,"^");
+        //( mouse_b&1 && mouse_x<=410 && mouse_x>=390 && mouse_y<=598 && mouse_y>=588)
+
+        // bouton bas
+        rectfill(page,390,610,410,620,makecol(0,128,0 ));
+        textprintf_centre_ex(page,font,400,612,makecol(255,255,255),0,"V");
+        //( mouse_b&1 && mouse_x<=410 && mouse_x>=390 && mouse_y<=610 && mouse_y>=620)
+
+        // bouton gauche
+        rectfill(page,365,598,390,610,makecol(0,128,0 ));
+        textprintf_centre_ex(page,font,375,600,makecol(255,255,255),0,"<");
+        //( mouse_b&1 && mouse_x<=390 && mouse_x>=365 && mouse_y<=610 && mouse_y>=598)
+
+        // bouton droit
+        rectfill(page,410,598,435,610,makecol(0,128,0 ));
+        textprintf_centre_ex(page,font,425,600,makecol(255,255,255),0,">");
+        //( mouse_b&1 && mouse_x<=435 && mouse_x>=410 && mouse_y<=610 && mouse_y>=598)
+        */
+
+        // bouton attaque corps à corps
+        if( mouse_x<=420 && mouse_x>=380 && mouse_y<=620 && mouse_y>=600)
+        {
+            rectfill(page,380,600,420,620,makecol(255,0,0 ));
+        }
+        else
+        {
+            rect(page,380,600,420,620,makecol(255,0,0 ));
+        }
+
+        textprintf_centre_ex(page,font,400,605,makecol(255,255,255),0,"Arme");
+        if( mouse_b&1 && mouse_x<=420 && mouse_x>=380 && mouse_y<=620 && mouse_y>=600)
+        {
+            Arme(Joueures[j].classe,j);
+        }
+
+        // bouton attaque à distance 1
+        if ( mouse_x<=370 && mouse_x>=330 && mouse_y<=640 && mouse_y>=620)
+        {
+            rectfill(page,330,620,370,640,makecol(0,0,255));
+        }
+        else
+        {
+            rect(page,330,620,370,640,makecol(0,0,255));
+        }
+
+
+        textprintf_centre_ex(page,font,350,625,makecol(255,255,255),0,"Sort1");
+        if( mouse_b&1 && mouse_x<=370 && mouse_x>=330 && mouse_y<=640 && mouse_y>=620)
+        {
+            Sort1(Joueures[j].classe,j);
+        }
+
+        // bouton attaque à distance 2
+        if( mouse_x<=470 && mouse_x>=430 && mouse_y<=640 && mouse_y>=620)
+        {
+           rectfill(page,430,620,470,640,makecol(0,0,255));
+        }
+        else
+        {
+            rect(page,430,620,470,640,makecol(0,0,255));
+        }
+
+        textprintf_centre_ex(page,font,450,625,makecol(255,255,255),0,"Sort2");
+        if( mouse_b&1 && mouse_x<=470 && mouse_x>=430 && mouse_y<=640 && mouse_y>=620)
+        {
+           Sort2(Joueures[j].classe,j);
+        }
+
+        // bouton attaque à distance 3
+        if( mouse_x<=370 && mouse_x>=330 && mouse_y<=680 && mouse_y>=660)
+        {
+            rectfill(page,330,660,370,680,makecol(0,0,255));
+        }
+        else
+        {
+            rect(page,330,660,370,680,makecol(0,0,255));
+        }
+
+        textprintf_centre_ex(page,font,350,665,makecol(255,255,255),0,"Sort3");
+        if( mouse_b&1 && mouse_x<=370 && mouse_x>=330 && mouse_y<=680 && mouse_y>=660)
+        {
+            Sort3(Joueures[j].classe,j);
+        }
+
+        // bouton attaque à distance 4
+        if( mouse_x<=470 && mouse_x>=430 && mouse_y<=680 && mouse_y>=660)
+        {
+            rectfill(page,430,660,470,680,makecol(0,0,255));
+        }
+        else
+        {
+            rect(page,430,660,470,680,makecol(0,0,255));
+        }
+
+        textprintf_centre_ex(page,font,450,665,makecol(255,255,255),0,"Sort4");
+        if( mouse_b&1 && mouse_x<=470 && mouse_x>=430 && mouse_y<=680 && mouse_y>=660)
+        {
+            Sort4(Joueures[j].classe,j);
+        }
+
+
+
+        // Infos ennemi 2
+        if(nbjoueur==2)
+        {
+            textprintf_right_ex(page,font,792,580,makecol(255,0,0),makecol(0,255,0),"Joueur 1 PV: %d",Joueures[0].pv);
+            textprintf_right_ex(page,font,792,600,makecol(255,0,0),makecol(0,255,0),"Joueur 2 PV: %d",Joueures[1].pv);
+        }
+
+        // Infos ennemi 3
+        if(nbjoueur==3)
+        {
+            textprintf_right_ex(page,font,792,580,makecol(255,0,0),makecol(0,255,0),"Joueur 1 PV: %d",Joueures[0].pv);
+            textprintf_right_ex(page,font,792,600,makecol(255,0,0),makecol(0,255,0),"Joueur 2 PV: %d",Joueures[1].pv);
+            textprintf_right_ex(page,font,792,620,makecol(255,0,0),makecol(0,255,0),"Joueur 3 PV: %d",Joueures[2].pv);
+        }
+
+        // Infos ennemi 4
+        if(nbjoueur==4)
+        {
+            textprintf_right_ex(page,font,792,580,makecol(255,0,0),makecol(0,255,0),"Joueur 1 PV: %d",Joueures[0].pv);
+            textprintf_right_ex(page,font,792,600,makecol(255,0,0),makecol(0,255,0),"Joueur 2 PV: %d",Joueures[1].pv);
+            textprintf_right_ex(page,font,792,620,makecol(255,0,0),makecol(0,255,0),"Joueur 3 PV: %d",Joueures[2].pv);
+            textprintf_right_ex(page,font,792,640,makecol(255,0,0),makecol(0,255,0),"Joueur 4 PV: %d",Joueures[3].pv);
+        }
+
+
+        // Bord console utilisateur
+        rect(page,0,560,800,700,makecol(0,255,0 ));
+        rect(page,1,561,799,699,makecol(0,255,0 ));
+        rect(page,2,562,798,698,makecol(0,255,0 ));
+        rect(page,3,563,797,697,makecol(0,255,0 ));
+
+        // Info curseur
+        textprintf_ex(page,font,690,685,makecol(0,255,0),makecol(0,0,0),"x=%4d y=%4d",mouse_x,mouse_y);
+
+        if (nbjoueur==2)
+        {
+            // Afficher personnage (positionner par rapport à ses jambes)
+        draw_sprite(page, acteur1->img, acteur1->x - acteur1->img->w/2, acteur1->y - acteur1->img->h + 8);
+
+        // Afficher personnage (positionner par rapport à ses jambes)
+        draw_sprite(page, acteur2->img, acteur2->x - acteur2->img->w/2, acteur2->y - acteur2->img->h + 8);
+        }
+
+        if (nbjoueur==3)
+        {
+            // Afficher personnage (positionner par rapport à ses jambes)
+        draw_sprite(page, acteur1->img, acteur1->x - acteur1->img->w/2, acteur1->y - acteur1->img->h + 8);
+
+        // Afficher personnage (positionner par rapport à ses jambes)
+        draw_sprite(page, acteur2->img, acteur2->x - acteur2->img->w/2, acteur2->y - acteur2->img->h + 8);
+
+        // Afficher personnage (positionner par rapport à ses jambes)
+        draw_sprite(page, acteur3->img, acteur3->x - acteur3->img->w/2, acteur3->y - acteur3->img->h + 8);
+        }
+
+        if (nbjoueur==4)
+        {
+            // Afficher personnage (positionner par rapport à ses jambes)
+        draw_sprite(page, acteur1->img, acteur1->x - acteur1->img->w/2, acteur1->y - acteur1->img->h + 8);
+
+        // Afficher personnage (positionner par rapport à ses jambes)
+        draw_sprite(page, acteur2->img, acteur2->x - acteur2->img->w/2, acteur2->y - acteur2->img->h + 8);
+
+        // Afficher personnage (positionner par rapport à ses jambes)
+        draw_sprite(page, acteur3->img, acteur3->x - acteur3->img->w/2, acteur3->y - acteur3->img->h + 8);
+
+        // Afficher personnage (positionner par rapport à ses jambes)
+        draw_sprite(page, acteur4->img, acteur4->x - acteur4->img->w/2, acteur4->y - acteur4->img->h + 8);
+
+        }
+
+        // Affichage du buffer mis a jour a l'ecran
+        blit(page,screen,0,0,0,0,SCREEN_W,SCREEN_H);
+
+        // On fait une petite pause
+        rest(200);
+    }
+
+    /*if (Joueures[j].pv<=0)
+    {
+      fin3=1;
+    }
+    */
+    j=0;
+
+    }
     }
 
     return 0;
