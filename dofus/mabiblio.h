@@ -51,10 +51,10 @@ void dessineTuile(BITMAP *bmp, int ituile, int xmap, int ymap);
 void dessineTerrain(BITMAP *bmp, int terrain[NYMAP][NXMAP]);
 int typeTerrain(t_acteur *acteur, int dx, int dy, int type);
 BITMAP * load_bitmap_check(char *nomImage);
-void Arme(int numeroClasse,int i);
-void Sort1(int numeroClasse,int i);
-void Sort2(int numeroClasse,int i);
-void Sort3(int numeroClasse,int i);
-void Sort4(int numeroClasse,int i);
+void Arme(int numeroClasse,int i,int lattaque);
+void Sort1(int numeroClasse,int i,int lattaque);
+void Sort2(int numeroClasse,int i,int lattaque);
+void Sort3(int numeroClasse,int i,int lattaque);
+void Sort4(int numeroClasse,int i,int lattaque);
 
 #endif // MABIBLIO_H_INCLUDED

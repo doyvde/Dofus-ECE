@@ -1,6 +1,6 @@
 #include <stdio.h>
 #include <stdlib.h>
-
+#include <time.h>
 /**************************************************************************
 DECOR TILEMAP: Ce programme construit un decor à l'écran
                en utilisant des éléments graphiques standardisés
@@ -36,8 +36,9 @@ int main()
     t_acteur *acteur3;    // Un acteur (à créer)
     t_acteur *acteur4;    // Un acteur (à créer)
     BITMAP *page;// BITMAP buffer d'affichage
-    int findetous=0,fin=0,fin1=0,fin2=0,fin3=0,nbjoueur=0;
+    int findetous=0,fin=0,fin1=0,fin2=0,fin3=0,nbjoueur=0,aurevoir=0;
     int i=0,j=0;
+    int ennemi=0;
 
     // Lancer allegro et le mode graphique
     allegro_init();
@@ -68,24 +69,36 @@ int main()
     acteur1 = (t_acteur *)malloc(1*sizeof(t_acteur));
     // Pour la position : multiples de l'unité de déplacement...
     acteur1->x = 32;     acteur1->y = 200;
+    //((acteur4->x)<=(acteur1->x+100)) && ((acteur4->x)>=(acteur1->x-100)) && ((acteur4->y)<=(acteur1->y+100)) && ((acteur4->y)>=(acteur1->y-100))) // creer un rectangle de detction autour du personnaage
+    //((acteur2->x)<=(acteur1->x+100)) && ((acteur2->x)>=(acteur1->x-100)) && ((acteur2->y)<=(acteur1->y+100)) && ((acteur2->y)>=(acteur1->y-100))) // creer un rectangle de detction autour du personnaage
+    //((acteur3->x)<=(acteur1->x+100)) && ((acteur3->x)>=(acteur1->x-100)) && ((acteur3->y)<=(acteur1->y+100)) && ((acteur3->y)>=(acteur1->y-100))) // creer un rectangle de detction autour du personnaage
     //acteur1->img = load_bitmap_check("sprite.bmp");
 
     // Allocation et initialisation des paramètres de l'acteur :
     acteur2 = (t_acteur *)malloc(1*sizeof(t_acteur));
     // Pour la position : multiples de l'unité de déplacement...
     acteur2->x = 470;     acteur2->y = 45;
+    //((acteur1->x)<=(acteur2->x+100)) && ((acteur1->x)>=(acteur2->x-100)) && ((acteur1->y)<=(acteur2->y+100)) && ((acteur1->y)>=(acteur2->y-100))) // creer un rectangle de detction autour du personnaage
+    //((acteur4->x)<=(acteur2->x+100)) && ((acteur4->x)>=(acteur2->x-100)) && ((acteur4->y)<=(acteur2->y+100)) && ((acteur4->y)>=(acteur2->y-100))) // creer un rectangle de detction autour du personnaage
+    //((acteur3->x)<=(acteur2->x+100)) && ((acteur3->x)>=(acteur2->x-100)) && ((acteur3->y)<=(acteur2->y+100)) && ((acteur3->y)>=(acteur2->y-100))) // creer un rectangle de detction autour du personnaage
     //acteur2->img = load_bitmap_check("sprite.bmp");
 
     // Allocation et initialisation des paramètres de l'acteur :
     acteur3 = (t_acteur *)malloc(1*sizeof(t_acteur));
     // Pour la position : multiples de l'unité de déplacement...
     acteur3->x = 760;     acteur3->y = 420;
+    //((acteur1->x)<=(acteur3->x+100)) && ((acteur1->x)>=(acteur3->x-100)) && ((acteur1->y)<=(acteur3->y+100)) && ((acteur1->y)>=(acteur3->y-100))) // creer un rectangle de detction autour du personnaage
+    //((acteur2->x)<=(acteur3->x+100)) && ((acteur2->x)>=(acteur3->x-100)) && ((acteur2->y)<=(acteur3->y+100)) && ((acteur2->y)>=(acteur3->y-100))) // creer un rectangle de detction autour du personnaage
+    //((acteur4->x)<=(acteur3->x+100)) && ((acteur4->x)>=(acteur3->x-100)) && ((acteur4->y)<=(acteur3->y+100)) && ((acteur4->y)>=(acteur3->y-100))) // creer un rectangle de detction autour du personnaage
     //acteur3->img = load_bitmap_check("sprite.bmp");
 
     // Allocation et initialisation des paramètres de l'acteur :
     acteur4 = (t_acteur *)malloc(1*sizeof(t_acteur));
     // Pour la position : multiples de l'unité de déplacement...
     acteur4->x = 295;     acteur4->y = 530;
+    //((acteur1->x)<=(acteur4->x+100)) && ((acteur1->x)>=(acteur4->x-100)) && ((acteur1->y)<=(acteur4->y+100)) && ((acteur1->y)>=(acteur4->y-100))) // creer un rectangle de detction autour du personnaage
+    //((acteur2->x)<=(acteur4->x+100)) && ((acteur2->x)>=(acteur4->x-100)) && ((acteur2->y)<=(acteur4->y+100)) && ((acteur2->y)>=(acteur4->y-100))) // creer un rectangle de detction autour du personnaage
+    //((acteur3->x)<=(acteur4->x+100)) && ((acteur3->x)>=(acteur4->x-100)) && ((acteur3->y)<=(acteur4->y+100)) && ((acteur3->y)>=(acteur4->y-100))) // creer un rectangle de detction autour du personnaage
     //acteur4->img = load_bitmap_check("sprite.bmp");
 
 
@@ -408,6 +421,8 @@ int main()
         // Dessiner le terrain
         dessineTerrain(page, terrain);
 
+        ennemi=5;
+
         //( mouse_b&1 && mouse_x<=40 && mouse_x>=390 && mouse_y<=20 && mouse_y>=20)
 
         // Gérer déplacements en prenant en compte les obstacles
@@ -466,27 +481,264 @@ int main()
         if ((    key[KEY_UP] && !typeTerrain(acteur4,0,-4,1) && j==3))//haut
            acteur4->y-=4;
 
-        // Détecter interactions avec des éléments spéciaux
-        if ( typeTerrain(acteur1,0,0,2) ) // dans l'eau ?
-            textprintf_centre_ex(page,font,400,565,makecol(255,255,255),0," NAGE ");
-        else
-            textprintf_centre_ex(page,font,400,565,makecol(255,255,255),0,"MARCHE");
 
-        if ( typeTerrain(acteur2,0,0,2) ) // dans l'eau ?
-            textprintf_centre_ex(page,font,400,565,makecol(255,255,255),0," NAGE ");
-        else
-            textprintf_centre_ex(page,font,400,565,makecol(255,255,255),0,"MARCHE");
+        textprintf_centre_ex(page,font,400,565,makecol(255,255,255),0,"Sur qui voulez vous utiliser vos capacites ?");
 
-        if ( typeTerrain(acteur3,0,0,2) ) // dans l'eau ?
-            textprintf_centre_ex(page,font,400,565,makecol(255,255,255),0," NAGE ");
-        else
-            textprintf_centre_ex(page,font,400,565,makecol(255,255,255),0,"MARCHE");
+        if (j==0)
+        {
+        if(((acteur1->x)<=(acteur1->x+100)) && ((acteur1->x)>=(acteur1->x-100)) && ((acteur1->y)<=(acteur1->y+100)) && ((acteur1->y)>=(acteur1->y-100))) // creer un rectangle de detction autour du personnaage
+        {
+            rectfill(page,290,572,320,590,makecol(255,0,0 ));
+            if ( mouse_b&1 && mouse_x<=320 && mouse_x>=290 && mouse_y<=590 && mouse_y>=572)
+            {
+                ennemi=1;
+            }
 
-        if ( typeTerrain(acteur4,0,0,2) ) // dans l'eau ?
-            textprintf_centre_ex(page,font,400,565,makecol(255,255,255),0," NAGE ");
+        }
         else
-            textprintf_centre_ex(page,font,400,565,makecol(255,255,255),0,"MARCHE");
+        {
+            rect(page,290,572,320,590,makecol(255,0,0 ));
+        }
+        textprintf_ex(page,font,300,577,makecol(255,255,255),0,"J1");
 
+        if(((acteur2->x)<=(acteur1->x+100)) && ((acteur2->x)>=(acteur1->x-100)) && ((acteur2->y)<=(acteur1->y+100)) && ((acteur2->y)>=(acteur1->y-100))) // creer un rectangle de detction autour du personnaage
+        {
+            rectfill(page,340,572,370,590,makecol(255,0,0 ));
+            if ( mouse_b&1 && mouse_x<=370 && mouse_x>=340 && mouse_y<=590 && mouse_y>=572)
+            {
+                ennemi=2;
+            }
+
+        }
+        else
+        {
+            rect(page,340,572,370,590,makecol(255,0,0 ));
+        }
+        textprintf_ex(page,font,350,577,makecol(255,255,255),0,"J2");
+
+        if(((acteur3->x)<=(acteur1->x+100)) && ((acteur3->x)>=(acteur1->x-100)) && ((acteur3->y)<=(acteur1->y+100)) && ((acteur3->y)>=(acteur1->y-100))) // creer un rectangle de detction autour du personnaage
+        {
+            rectfill(page,390,572,420,590,makecol(255,0,0 ));
+            if ( mouse_b&1 && mouse_x<=420 && mouse_x>=390 && mouse_y<=590 && mouse_y>=572)
+            {
+                ennemi=3;
+            }
+
+        }
+        else
+        {
+            rect(page,390,572,420,590,makecol(255,0,0 ));
+        }
+        textprintf_ex(page,font,400,577,makecol(255,255,255),0,"J3");
+
+        if(((acteur4->x)<=(acteur1->x+100)) && ((acteur4->x)>=(acteur1->x-100)) && ((acteur4->y)<=(acteur1->y+100)) && ((acteur4->y)>=(acteur1->y-100))) // creer un rectangle de detction autour du personnaage
+        {
+            rectfill(page,440,572,470,590,makecol(255,0,0 ));
+            if ( mouse_b&1 && mouse_x<=470 && mouse_x>=440 && mouse_y<=590 && mouse_y>=572)
+            {
+                ennemi=4;
+            }
+
+        }
+        else
+        {
+            rect(page,440,572,470,590,makecol(255,0,0 ));
+        }
+
+        textprintf_ex(page,font,450,577,makecol(255,255,255),0,"J4");
+        }
+
+        if (j==1)
+        {
+        if(((acteur1->x)<=(acteur2->x+100)) && ((acteur1->x)>=(acteur2->x-100)) && ((acteur1->y)<=(acteur2->y+100)) && ((acteur1->y)>=(acteur2->y-100))) // creer un rectangle de detction autour du personnaage
+        {
+            rectfill(page,290,572,320,590,makecol(255,0,0 ));
+            if ( mouse_b&1 && mouse_x<=320 && mouse_x>=290 && mouse_y<=590 && mouse_y>=572)
+            {
+                ennemi=1;
+            }
+
+        }
+        else
+        {
+            rect(page,290,572,320,590,makecol(255,0,0 ));
+        }
+        textprintf_ex(page,font,300,577,makecol(255,255,255),0,"J1");
+
+        if(((acteur2->x)<=(acteur2->x+100)) && ((acteur2->x)>=(acteur2->x-100)) && ((acteur2->y)<=(acteur2->y+100)) && ((acteur2->y)>=(acteur2->y-100))) // creer un rectangle de detction autour du personnaage
+        {
+            rectfill(page,340,572,370,590,makecol(255,0,0 ));
+            if ( mouse_b&1 && mouse_x<=370 && mouse_x>=340 && mouse_y<=590 && mouse_y>=572)
+            {
+                ennemi=2;
+            }
+
+        }
+        else
+        {
+            rect(page,340,572,370,590,makecol(255,0,0 ));
+        }
+        textprintf_ex(page,font,350,577,makecol(255,255,255),0,"J2");
+
+        if(((acteur3->x)<=(acteur2->x+100)) && ((acteur3->x)>=(acteur2->x-100)) && ((acteur3->y)<=(acteur2->y+100)) && ((acteur3->y)>=(acteur2->y-100))) // creer un rectangle de detction autour du personnaage
+        {
+            rectfill(page,390,572,420,590,makecol(255,0,0 ));
+            if ( mouse_b&1 && mouse_x<=420 && mouse_x>=390 && mouse_y<=590 && mouse_y>=572)
+            {
+                ennemi=3;
+            }
+
+        }
+        else
+        {
+            rect(page,390,572,420,590,makecol(255,0,0 ));
+        }
+        textprintf_ex(page,font,400,577,makecol(255,255,255),0,"J3");
+
+        if(((acteur4->x)<=(acteur2->x+100)) && ((acteur4->x)>=(acteur2->x-100)) && ((acteur4->y)<=(acteur2->y+100)) && ((acteur4->y)>=(acteur2->y-100))) // creer un rectangle de detction autour du personnaage
+        {
+            rectfill(page,440,572,470,590,makecol(255,0,0 ));
+            if ( mouse_b&1 && mouse_x<=470 && mouse_x>=440 && mouse_y<=590 && mouse_y>=572)
+            {
+                ennemi=4;
+            }
+
+        }
+        else
+        {
+            rect(page,440,572,470,590,makecol(255,0,0 ));
+        }
+
+        textprintf_ex(page,font,450,577,makecol(255,255,255),0,"J4");
+        }
+
+        if (j==2)
+        {
+        if(((acteur1->x)<=(acteur3->x+100)) && ((acteur1->x)>=(acteur3->x-100)) && ((acteur1->y)<=(acteur3->y+100)) && ((acteur1->y)>=(acteur3->y-100))) // creer un rectangle de detction autour du personnaage
+        {
+            rectfill(page,290,572,320,590,makecol(255,0,0 ));
+            if ( mouse_b&1 && mouse_x<=320 && mouse_x>=290 && mouse_y<=590 && mouse_y>=572)
+            {
+                ennemi=1;
+            }
+
+        }
+        else
+        {
+            rect(page,290,572,320,590,makecol(255,0,0 ));
+        }
+        textprintf_ex(page,font,300,577,makecol(255,255,255),0,"J1");
+
+        if(((acteur2->x)<=(acteur3->x+100)) && ((acteur2->x)>=(acteur3->x-100)) && ((acteur2->y)<=(acteur3->y+100)) && ((acteur2->y)>=(acteur3->y-100))) // creer un rectangle de detction autour du personnaage
+        {
+            rectfill(page,340,572,370,590,makecol(255,0,0 ));
+            if ( mouse_b&1 && mouse_x<=370 && mouse_x>=340 && mouse_y<=590 && mouse_y>=572)
+            {
+                ennemi=2;
+            }
+
+        }
+        else
+        {
+            rect(page,340,572,370,590,makecol(255,0,0 ));
+        }
+        textprintf_ex(page,font,350,577,makecol(255,255,255),0,"J2");
+
+        if(((acteur3->x)<=(acteur3->x+100)) && ((acteur3->x)>=(acteur3->x-100)) && ((acteur3->y)<=(acteur3->y+100)) && ((acteur3->y)>=(acteur3->y-100))) // creer un rectangle de detction autour du personnaage
+        {
+            rectfill(page,390,572,420,590,makecol(255,0,0 ));
+            if ( mouse_b&1 && mouse_x<=420 && mouse_x>=390 && mouse_y<=590 && mouse_y>=572)
+            {
+                ennemi=3;
+            }
+
+        }
+        else
+        {
+            rect(page,390,572,420,590,makecol(255,0,0 ));
+        }
+        textprintf_ex(page,font,400,577,makecol(255,255,255),0,"J3");
+
+        if(((acteur4->x)<=(acteur3->x+100)) && ((acteur4->x)>=(acteur3->x-100)) && ((acteur4->y)<=(acteur3->y+100)) && ((acteur4->y)>=(acteur3->y-100))) // creer un rectangle de detction autour du personnaage
+        {
+            rectfill(page,440,572,470,590,makecol(255,0,0 ));
+            if ( mouse_b&1 && mouse_x<=470 && mouse_x>=440 && mouse_y<=590 && mouse_y>=572)
+            {
+                ennemi=4;
+            }
+
+        }
+        else
+        {
+            rect(page,440,572,470,590,makecol(255,0,0 ));
+        }
+
+        textprintf_ex(page,font,450,577,makecol(255,255,255),0,"J4");
+        }
+
+        if (j==3)
+        {
+        if(((acteur1->x)<=(acteur4->x+100)) && ((acteur1->x)>=(acteur4->x-100)) && ((acteur1->y)<=(acteur4->y+100)) && ((acteur1->y)>=(acteur4->y-100))) // creer un rectangle de detction autour du personnaage
+        {
+            rectfill(page,290,572,320,590,makecol(255,0,0 ));
+            if ( mouse_b&1 && mouse_x<=320 && mouse_x>=290 && mouse_y<=590 && mouse_y>=572)
+            {
+                ennemi=1;
+            }
+
+        }
+        else
+        {
+            rect(page,290,572,320,590,makecol(255,0,0 ));
+        }
+        textprintf_ex(page,font,300,577,makecol(255,255,255),0,"J1");
+
+        if(((acteur2->x)<=(acteur4->x+100)) && ((acteur2->x)>=(acteur4->x-100)) && ((acteur2->y)<=(acteur4->y+100)) && ((acteur2->y)>=(acteur4->y-100))) // creer un rectangle de detction autour du personnaage
+        {
+            rectfill(page,340,572,370,590,makecol(255,0,0 ));
+            if ( mouse_b&1 && mouse_x<=370 && mouse_x>=340 && mouse_y<=590 && mouse_y>=572)
+            {
+                ennemi=2;
+            }
+
+        }
+        else
+        {
+            rect(page,340,572,370,590,makecol(255,0,0 ));
+        }
+        textprintf_ex(page,font,350,577,makecol(255,255,255),0,"J2");
+
+        if(((acteur3->x)<=(acteur4->x+100)) && ((acteur3->x)>=(acteur4->x-100)) && ((acteur3->y)<=(acteur4->y+100)) && ((acteur3->y)>=(acteur4->y-100))) // creer un rectangle de detction autour du personnaage
+        {
+            rectfill(page,390,572,420,590,makecol(255,0,0 ));
+            if ( mouse_b&1 && mouse_x<=420 && mouse_x>=390 && mouse_y<=590 && mouse_y>=572)
+            {
+                ennemi=3;
+            }
+
+        }
+        else
+        {
+            rect(page,390,572,420,590,makecol(255,0,0 ));
+        }
+        textprintf_ex(page,font,400,577,makecol(255,255,255),0,"J3");
+
+        if(((acteur4->x)<=(acteur4->x+100)) && ((acteur4->x)>=(acteur4->x-100)) && ((acteur4->y)<=(acteur4->y+100)) && ((acteur4->y)>=(acteur4->y-100))) // creer un rectangle de detction autour du personnaage
+        {
+            rectfill(page,440,572,470,590,makecol(255,0,0 ));
+            if ( mouse_b&1 && mouse_x<=470 && mouse_x>=440 && mouse_y<=590 && mouse_y>=572)
+            {
+                ennemi=4;
+            }
+
+        }
+        else
+        {
+            rect(page,440,572,470,590,makecol(255,0,0 ));
+        }
+
+        textprintf_ex(page,font,450,577,makecol(255,255,255),0,"J4");
+        }
 
         // Infos joueur
         textprintf_ex(page,font,5,580,makecol(255,0,0),makecol(0,255,0),"Joueur %d:",j+1);
@@ -501,17 +753,19 @@ int main()
         {
             j++;
         }
-        rectfill(page,10,675,50,690,makecol(0,255,0));
-        textprintf_ex(page,font,15,680,makecol(255,0,0),makecol(0,255,0),"Menu");
-        if( mouse_b&1 && mouse_x<=50 && mouse_x>=10 && mouse_y<=690 && mouse_y>=675)
+        rectfill(page,10,675,75,690,makecol(0,255,0));
+        textprintf_ex(page,font,15,680,makecol(255,0,0),makecol(0,255,0),"Quitter");
+        if( mouse_b&1 && mouse_x<=75 && mouse_x>=10 && mouse_y<=690 && mouse_y>=675)
         {
+            j=5;
             fin3=1;
+            findetous=1;
         }
 
 
         // Commande
 
-        /*// bouton hauts
+      /*  // bouton hauts
         rectfill(page,390,588,410,598,makecol(0,128,0 ));
         textprintf_centre_ex(page,font,400,590,makecol(255,255,255),0,"^");
         //( mouse_b&1 && mouse_x<=410 && mouse_x>=390 && mouse_y<=598 && mouse_y>=588)
@@ -530,6 +784,7 @@ int main()
         rectfill(page,410,598,435,610,makecol(0,128,0 ));
         textprintf_centre_ex(page,font,425,600,makecol(255,255,255),0,">");
         //( mouse_b&1 && mouse_x<=435 && mouse_x>=410 && mouse_y<=610 && mouse_y>=598)
+        //
         */
 
         // bouton attaque corps à corps
@@ -545,7 +800,7 @@ int main()
         textprintf_centre_ex(page,font,400,605,makecol(255,255,255),0,"Arme");
         if( mouse_b&1 && mouse_x<=420 && mouse_x>=380 && mouse_y<=620 && mouse_y>=600)
         {
-            Arme(Joueures[j].classe,j);
+            Arme(Joueures[j].classe,j,ennemi);
         }
 
         // bouton attaque à distance 1
@@ -562,7 +817,7 @@ int main()
         textprintf_centre_ex(page,font,350,625,makecol(255,255,255),0,"Sort1");
         if( mouse_b&1 && mouse_x<=370 && mouse_x>=330 && mouse_y<=640 && mouse_y>=620)
         {
-            Sort1(Joueures[j].classe,j);
+            Sort1(Joueures[j].classe,j,ennemi);
         }
 
         // bouton attaque à distance 2
@@ -578,7 +833,7 @@ int main()
         textprintf_centre_ex(page,font,450,625,makecol(255,255,255),0,"Sort2");
         if( mouse_b&1 && mouse_x<=470 && mouse_x>=430 && mouse_y<=640 && mouse_y>=620)
         {
-           Sort2(Joueures[j].classe,j);
+           Sort2(Joueures[j].classe,j,ennemi);
         }
 
         // bouton attaque à distance 3
@@ -594,7 +849,7 @@ int main()
         textprintf_centre_ex(page,font,350,665,makecol(255,255,255),0,"Sort3");
         if( mouse_b&1 && mouse_x<=370 && mouse_x>=330 && mouse_y<=680 && mouse_y>=660)
         {
-            Sort3(Joueures[j].classe,j);
+            Sort3(Joueures[j].classe,j,ennemi);
         }
 
         // bouton attaque à distance 4
@@ -610,7 +865,7 @@ int main()
         textprintf_centre_ex(page,font,450,665,makecol(255,255,255),0,"Sort4");
         if( mouse_b&1 && mouse_x<=470 && mouse_x>=430 && mouse_y<=680 && mouse_y>=660)
         {
-            Sort4(Joueures[j].classe,j);
+            Sort4(Joueures[j].classe,j,ennemi);
         }
 
 
@@ -686,6 +941,12 @@ int main()
 
         }
 
+        if (Joueures[j].pv<=0)
+        {
+          fin3=1;
+        }
+
+
         // Affichage du buffer mis a jour a l'ecran
         blit(page,screen,0,0,0,0,SCREEN_W,SCREEN_H);
 
@@ -693,16 +954,88 @@ int main()
         rest(200);
     }
 
-    /*if (Joueures[j].pv<=0)
+    if (Joueures[j].pv<=0)
     {
       fin3=1;
     }
-    */
+
     j=0;
 
     }
+    while (!aurevoir)
+    {
+        clear_bitmap(page);
+
+        rectfill(page,300,30,500,55,makecol(0,255,0 ));
+        textprintf_ex(page,font,350,40,makecol(255,0,0),makecol(0,255,0),"FIN DU JEU");
+
+        // Infos ennemi 2
+        if(nbjoueur==2)
+        {
+            textprintf_ex(page,font,300,80,makecol(255,0,0),makecol(0,255,0),"Joueur 1 PV: %d",Joueures[0].pv);
+            textprintf_ex(page,font,300,100,makecol(255,0,0),makecol(0,255,0),"Compte: %d",Joueures[0].compte);
+            textprintf_ex(page,font,300,140,makecol(255,0,0),makecol(0,255,0),"Joueur 2 PV: %d",Joueures[1].pv);
+            textprintf_ex(page,font,300,160,makecol(255,0,0),makecol(0,255,0),"Compte: %d",Joueures[1].compte);
+        }
+
+        // Infos ennemi 3
+        if(nbjoueur==3)
+        {
+            textprintf_ex(page,font,300,80,makecol(255,0,0),makecol(0,255,0),"Joueur 1 PV: %d",Joueures[0].pv);
+            textprintf_ex(page,font,300,100,makecol(255,0,0),makecol(0,255,0),"Compte: %d",Joueures[0].compte);
+            textprintf_ex(page,font,300,140,makecol(255,0,0),makecol(0,255,0),"Joueur 2 PV: %d",Joueures[1].pv);
+            textprintf_ex(page,font,300,160,makecol(255,0,0),makecol(0,255,0),"Compte: %d",Joueures[1].compte);
+            textprintf_ex(page,font,300,200,makecol(255,0,0),makecol(0,255,0),"Joueur 3 PV: %d",Joueures[2].pv);
+            textprintf_ex(page,font,300,220,makecol(255,0,0),makecol(0,255,0),"Compte: %d",Joueures[2].compte);
+        }
+
+        // Infos ennemi 4
+        if(nbjoueur==4)
+        {
+            textprintf_ex(page,font,300,80,makecol(255,0,0),makecol(0,255,0),"Joueur 1 PV: %d",Joueures[0].pv);
+            textprintf_ex(page,font,300,100,makecol(255,0,0),makecol(0,255,0),"Compte: %d",Joueures[0].compte);
+            textprintf_ex(page,font,300,140,makecol(255,0,0),makecol(0,255,0),"Joueur 2 PV: %d",Joueures[1].pv);
+            textprintf_ex(page,font,300,160,makecol(255,0,0),makecol(0,255,0),"Compte: %d",Joueures[1].compte);
+            textprintf_ex(page,font,300,200,makecol(255,0,0),makecol(0,255,0),"Joueur 3 PV: %d",Joueures[2].pv);
+            textprintf_ex(page,font,300,220,makecol(255,0,0),makecol(0,255,0),"Compte: %d",Joueures[2].compte);
+            textprintf_ex(page,font,300,260,makecol(255,0,0),makecol(0,255,0),"Joueur 4 PV: %d",Joueures[3].pv);
+            textprintf_ex(page,font,300,280,makecol(255,0,0),makecol(0,255,0),"Compte: %d",Joueures[3].compte);
+        }
+
+
+    // Bord console utilisateur
+        rect(page,0,0,800,650,makecol(0,255,0 ));
+        rect(page,1,1,799,649,makecol(0,255,0 ));
+        rect(page,2,2,798,648,makecol(0,255,0 ));
+        rect(page,3,3,797,647,makecol(0,255,0 ));
+
+        //boutons
+
+        rect(page,300,350,500,450,makecol(0,255,0 ));//rectangle boutons quitter
+
+        textprintf_centre_ex(page,font,400,400,makecol(0,255,0),0,"Quitter");//texte boutons quitter
+
+
+        // prise en compte effective de la zone cliquable EXIT :
+        // clic sur la case -> fin du programme
+        if (mouse_b & 1 && mouse_x<=500 && mouse_x>=300 && mouse_y<=450 && mouse_y>=350) // droit : dessiner en bleu
+            {
+                aurevoir=1;
+                findetous=1;
+            }
+
+
+        // Affichage du buffer mis a jour a l'ecran
+        blit(page,screen,0,0,0,0,SCREEN_W,SCREEN_H);
+
+        // On fait une petite pause
+        rest(15);
+
+
     }
 
     return 0;
+}
+
 }
 END_OF_MAIN();

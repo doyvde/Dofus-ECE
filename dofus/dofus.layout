@@ -2,23 +2,29 @@
 <CodeBlocks_layout_file>
 	<FileVersion major="1" minor="0" />
 	<ActiveTarget name="Debug" />
-	<File name="mesfonctions.c" open="1" top="0" tabpos="3" split="0" active="1" splitpos="0" zoom_1="0" zoom_2="0">
+	<File name="main.c" open="1" top="1" tabpos="1" split="0" active="1" splitpos="0" zoom_1="0" zoom_2="0">
 		<Cursor>
-			<Cursor1 position="1028" topLine="0" />
+			<Cursor1 position="33009" topLine="543" />
 		</Cursor>
 		<Folding>
-			<Collapse line="6" />
-			<Collapse line="21" />
+			<Collapse line="487" />
+			<Collapse line="551" />
+			<Collapse line="615" />
+			<Collapse line="679" />
 		</Folding>
 	</File>
 	<File name="mabiblio.h" open="1" top="0" tabpos="2" split="0" active="1" splitpos="0" zoom_1="0" zoom_2="0">
 		<Cursor>
-			<Cursor1 position="1284" topLine="7" />
+			<Cursor1 position="1847" topLine="13" />
 		</Cursor>
 	</File>
-	<File name="main.c" open="1" top="1" tabpos="1" split="0" active="1" splitpos="0" zoom_1="1" zoom_2="0">
+	<File name="mesfonctions.c" open="1" top="0" tabpos="3" split="0" active="1" splitpos="0" zoom_1="0" zoom_2="0">
 		<Cursor>
-			<Cursor1 position="16930" topLine="498" />
+			<Cursor1 position="16840" topLine="355" />
 		</Cursor>
+		<Folding>
+			<Collapse line="7" />
+			<Collapse line="22" />
+		</Folding>
 	</File>
 </CodeBlocks_layout_file>

@@ -1,6 +1,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <allegro.h>
+#include <time.h>
 #include "mabiblio.h"
 
 // Pour gérer les collisions on indique les types de tuiles : 1 obstacle  2 eau
@@ -163,12 +164,18 @@ void initialiseJoueurs(int nJoueures)
 	}
 }
 
-void Arme(int numeroClasse,int i)
+void Arme(int numeroClasse,int i,int lattaque)
 {
+    int de3=0;
+    de3 = (rand() % 10) + 1;//
     if (numeroClasse==1)
     {
         if((Joueures[i].pa-5)>0)
         {
+            if(de3!=5)
+            {
+
+            }
 
         }
 
@@ -178,6 +185,10 @@ void Arme(int numeroClasse,int i)
     {
         if((Joueures[i].pa-5)>0)
         {
+            if(de3!=5)
+            {
+
+            }
 
         }
 
@@ -188,6 +199,10 @@ void Arme(int numeroClasse,int i)
     {
         if((Joueures[i].pa-5)>0)
         {
+            if(de3!=5)
+            {
+
+            }
 
         }
 
@@ -198,6 +213,10 @@ void Arme(int numeroClasse,int i)
     {
         if((Joueures[i].pa-5)>0)
         {
+            if(de3!=5)
+            {
+
+            }
 
         }
 
@@ -205,12 +224,18 @@ void Arme(int numeroClasse,int i)
     }
 }
 
-void Sort1(int numeroClasse,int i)
+void Sort1(int numeroClasse,int i,int lattaque)
 {
+    int de3=0;
+    de3 = (rand() % 10) + 1;//
     if (numeroClasse==1)
     {
         if((Joueures[i].pa-5)>0)
         {
+            if(de3!=5)
+            {
+
+            }
 
         }
 
@@ -221,6 +246,10 @@ void Sort1(int numeroClasse,int i)
     {
         if((Joueures[i].pa-5)>0)
         {
+            if(de3!=5)
+            {
+
+            }
 
         }
 
@@ -231,6 +260,10 @@ void Sort1(int numeroClasse,int i)
     {
         if((Joueures[i].pa-5)>0)
         {
+            if(de3!=5)
+            {
+
+            }
 
         }
 
@@ -241,6 +274,10 @@ void Sort1(int numeroClasse,int i)
     {
         if((Joueures[i].pa-5)>0)
         {
+            if(de3!=5)
+            {
+
+            }
 
         }
 
@@ -248,12 +285,18 @@ void Sort1(int numeroClasse,int i)
     }
 }
 
-void Sort2(int numeroClasse,int i)
+void Sort2(int numeroClasse,int i,int lattaque)
 {
+    int de3=0;
+    de3 = (rand() % 10) + 1;//
     if (numeroClasse==1)
     {
         if((Joueures[i].pa-5)>0)
         {
+            if(de3!=5)
+            {
+
+            }
 
         }
 
@@ -264,6 +307,10 @@ void Sort2(int numeroClasse,int i)
     {
         if((Joueures[i].pa-5)>0)
         {
+            if(de3!=5)
+            {
+
+            }
 
         }
 
@@ -274,6 +321,10 @@ void Sort2(int numeroClasse,int i)
     {
         if((Joueures[i].pa-5)>0)
         {
+            if(de3!=5)
+            {
+
+            }
 
         }
 
@@ -284,6 +335,10 @@ void Sort2(int numeroClasse,int i)
     {
         if((Joueures[i].pa-5)>0)
         {
+            if(de3!=5)
+            {
+
+            }
 
         }
 
@@ -291,12 +346,18 @@ void Sort2(int numeroClasse,int i)
     }
 }
 
-void Sort3(int numeroClasse,int i)
+void Sort3(int numeroClasse,int i,int lattaque)
 {
+    int de3=0;
+    de3 = (rand() % 10) + 1;//
     if (numeroClasse==1)
     {
         if((Joueures[i].pa-5)>0)
         {
+            if(de3!=5)
+            {
+
+            }
 
         }
 
@@ -307,6 +368,10 @@ void Sort3(int numeroClasse,int i)
     {
         if((Joueures[i].pa-5)>0)
         {
+            if(de3!=5)
+            {
+
+            }
 
         }
 
@@ -317,6 +382,10 @@ void Sort3(int numeroClasse,int i)
     {
         if((Joueures[i].pa-5)>0)
         {
+            if(de3!=5)
+            {
+
+            }
 
         }
 
@@ -327,6 +396,10 @@ void Sort3(int numeroClasse,int i)
     {
         if((Joueures[i].pa-5)>0)
         {
+            if(de3!=5)
+            {
+
+            }
 
         }
 
@@ -334,12 +407,18 @@ void Sort3(int numeroClasse,int i)
     }
 }
 
-void Sort4(int numeroClasse,int i)
+void Sort4(int numeroClasse,int i,int lattaque)
 {
+    int de3=0;
+    de3 = (rand() % 10) + 1;//
     if (numeroClasse==1)
     {
         if((Joueures[i].pa-5)>0)
         {
+            if(de3!=5)
+            {
+
+            }
 
         }
 
@@ -350,6 +429,10 @@ void Sort4(int numeroClasse,int i)
     {
         if((Joueures[i].pa-5)>0)
         {
+            if(de3!=5)
+            {
+
+            }
 
         }
 
@@ -360,6 +443,10 @@ void Sort4(int numeroClasse,int i)
     {
         if((Joueures[i].pa-5)>0)
         {
+            if(de3!=5)
+            {
+
+            }
 
         }
 
@@ -370,6 +457,10 @@ void Sort4(int numeroClasse,int i)
     {
         if((Joueures[i].pa-5)>0)
         {
+            if(de3!=5)
+            {
+
+            }
 
         }
 
