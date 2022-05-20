@@ -1,0 +1,17 @@
+# depslib dependency file v1.0
+1653059497 source:c:\users\pierrot\documents\ece\codeblocksproject\2eme_semestre\projet2\essai deplacement\main.c
+	<stdio.h>
+	<stdlib.h>
+	<stdbool.h>
+	<allegro.h>
+	<winalleg.h>
+
+1652698903 source:c:\users\pierrot\documents\ece\codeblocksproject\2eme_semestre\projet2\essai deplacement\initialisation.c
+	<stdio.h>
+	<stdlib.h>
+	<allegro.h>
+
+1652375875 source:c:\users\pierrot\documents\ece\codeblocksproject\2eme_semestre\projet2\essai deplacement\deplacement.c
+	<stdio.h>
+	<stdlib.h>
+
