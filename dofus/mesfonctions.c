@@ -1,7 +1,9 @@
 #include <stdio.h>
 #include <stdlib.h>
+#include <stdbool.h>
 #include <allegro.h>
 #include <time.h>
+#include <winalleg.h>
 #include "mabiblio.h"
 
 // Pour gérer les collisions on indique les types de tuiles : 1 obstacle  2 eau
@@ -77,6 +79,10 @@ void dessineTuile(BITMAP *bmp, int ituile, int xmap, int ymap){
     // on copie juste le morceau concerné
     blit(tableTuiles, bmp, col*TXTUILE, lig*TYTUILE,
          xmap*TXTUILE, ymap*TYTUILE, TXTUILE, TYTUILE);
+
+    if(1){
+        rect(bmp, xmap*TXTUILE, ymap*TYTUILE, xmap*TXTUILE+TXTUILE-1, ymap*TYTUILE +TYTUILE-1, makecol(0,255,0));
+    }
 
     // pour visualiser les types de tuiles (obstacle, eau)
     // ( à enlever pour un programme finalisé...)
@@ -466,4 +472,303 @@ void Sort4(int numeroClasse,int i,int lattaque)
 
 
     }
+}
+
+int zonedetect(t_acteur *acteur1, t_acteur *acteur2, t_acteur *acteur3,t_acteur *acteur4,int j,int maxi,int mini)
+{
+    printf("j1 x : %d //j1 x+min : %d \n",acteur1->x,acteur1->x+mini);
+     if (j==0)
+        {
+        //&&((acteur1->x)>=(acteur1->x+mini)) && ((acteur1->x)<=(acteur1->x-mini)) && ((acteur1->y)>=(acteur1->y+mini)) && ((acteur1->y)<=(acteur1->y-mini)))
+        /*if(((acteur1->x)<=(acteur1->x+maxi)) && ((acteur1->x)>=(acteur1->x-maxi)) && ((acteur1->y)<=(acteur1->y+maxi)) && ((acteur1->y)>=(acteur1->y-maxi))&&((acteur1->x)>=(acteur1->x+mini)) && ((acteur1->x)<=(acteur1->x-mini)) && ((acteur1->y)>=(acteur1->y+mini)) && ((acteur1->y)<=(acteur1->y-mini))) // creer un rectangle de detction autour du personnaage
+        {
+            return 1;
+        }*/
+
+        //&&((acteur2->x)>=(acteur1->x+mini)) && ((acteur2->x)<=(acteur1->x-mini)) && ((acteur2->y)>=(acteur1->y+mini)) && ((acteur2->y)<=(acteur1->y-mini)))
+        if(((acteur2->x)<=(acteur1->x+maxi)) && ((acteur2->x)>=(acteur1->x-maxi)) && ((acteur2->y)<=(acteur1->y+maxi)) && ((acteur2->y)>=(acteur1->y-maxi)))  // creer un rectangle de detction autour du personnaage
+        {
+            if (((acteur2->x)>=(acteur1->x+mini)) || ((acteur2->x)<=(acteur1->x-mini)) || ((acteur2->y)>=(acteur1->y+mini)) || ((acteur2->y)<=(acteur1->y-mini)))
+            {
+               return 1;
+            }
+
+        }
+
+        //&&((acteur3->x)>=(acteur1->x+mini)) && ((acteur3->x)<=(acteur1->x-mini)) && ((acteur3->y)>=(acteur1->y+mini)) && ((acteur3->y)<=(acteur1->y-mini)))
+        if(((acteur3->x)<=(acteur1->x+maxi)) && ((acteur3->x)>=(acteur1->x-maxi)) && ((acteur3->y)<=(acteur1->y+maxi)) && ((acteur3->y)>=(acteur1->y-maxi)))//&&((acteur3->x)>=(acteur1->x+mini)) && ((acteur3->x)<=(acteur1->x-mini)) && ((acteur3->y)>=(acteur1->y+mini)) && ((acteur3->y)<=(acteur1->y-mini))) // creer un rectangle de detction autour du personnaage
+        {
+            return 1;
+        }
+
+        //&&((acteur4->x)>=(acteur1->x+mini)) && ((acteur4->x)<=(acteur1->x-mini)) && ((acteur4->y)>=(acteur1->y+mini)) && ((acteur4->y)<=(acteur1->y-mini)))
+        if(((acteur4->x)<=(acteur1->x+maxi)) && ((acteur4->x)>=(acteur1->x-maxi)) && ((acteur4->y)<=(acteur1->y+maxi)) && ((acteur4->y)>=(acteur1->y-maxi)))//&&((acteur4->x)>=(acteur1->x+mini)) && ((acteur4->x)<=(acteur1->x-mini)) && ((acteur4->y)>=(acteur1->y+mini)) && ((acteur4->y)<=(acteur1->y-mini))) // creer un rectangle de detction autour du personnaage
+        {
+            return 1;
+        }
+        else
+        {
+            return 0;
+        }
+        }
+
+        if (j==1)
+        {
+
+        //&&((acteur1->x)>=(acteur2->x+mini)) && ((acteur1->x)<=(acteur2->x-mini)) && ((acteur1->y)>=(acteur2->y+mini)) && ((acteur1->y)<=(acteur2->y-mini)))
+        if(((acteur1->x)<=(acteur2->x+maxi)) && ((acteur1->x)>=(acteur2->x-maxi)) && ((acteur1->y)<=(acteur2->y+maxi)) && ((acteur1->y)>=(acteur2->y-maxi))&&((acteur1->x)>=(acteur2->x+mini)) && ((acteur1->x)<=(acteur2->x-mini)) && ((acteur1->y)>=(acteur2->y+mini)) && ((acteur1->y)<=(acteur2->y-mini))) // creer un rectangle de detction autour du personnaage
+        {
+            return 1;
+        }
+
+        //&&((acteur2->x)>=(acteur2->x+mini)) && ((acteur2->x)<=(acteur2->x-mini)) && ((acteur2->y)>=(acteur2->y+mini)) && ((acteur2->y)<=(acteur2->y-mini)))
+        /*if(((acteur2->x)<=(acteur2->x+maxi)) && ((acteur2->x)>=(acteur2->x-maxi)) && ((acteur2->y)<=(acteur2->y+maxi)) && ((acteur2->y)>=(acteur2->y-maxi))&&((acteur2->x)>=(acteur2->x+mini)) && ((acteur2->x)<=(acteur2->x-mini)) && ((acteur2->y)>=(acteur2->y+mini)) && ((acteur2->y)<=(acteur2->y-mini))) // creer un rectangle de detction autour du personnaage
+        {
+            return 1;
+        }*/
+
+        //&&((acteur3->x)>=(acteur2->x+mini)) && ((acteur3->x)<=(acteur2->x-mini)) && ((acteur3->y)>=(acteur2->y+mini)) && ((acteur3->y)<=(acteur2->y-mini)))
+        if(((acteur3->x)<=(acteur2->x+maxi)) && ((acteur3->x)>=(acteur2->x-maxi)) && ((acteur3->y)<=(acteur2->y+maxi)) && ((acteur3->y)>=(acteur2->y-maxi))&&((acteur3->x)>=(acteur2->x+mini)) && ((acteur3->x)<=(acteur2->x-mini)) && ((acteur3->y)>=(acteur2->y+mini)) && ((acteur3->y)<=(acteur2->y-mini))) // creer un rectangle de detction autour du personnaage
+        {
+            return 1;
+        }
+
+        //&&((acteur4->x)>=(acteur2->x+mini)) && ((acteur4->x)<=(acteur2->x-mini)) && ((acteur4->y)>=(acteur2->y+mini)) && ((acteur4->y)<=(acteur2->y-mini)))
+        if(((acteur4->x)<=(acteur2->x+maxi)) && ((acteur4->x)>=(acteur2->x-maxi)) && ((acteur4->y)<=(acteur2->y+maxi)) && ((acteur4->y)>=(acteur2->y-maxi))&&((acteur4->x)>=(acteur2->x+mini)) && ((acteur4->x)<=(acteur2->x-mini)) && ((acteur4->y)>=(acteur2->y+mini)) && ((acteur4->y)<=(acteur2->y-mini))) // creer un rectangle de detction autour du personnaage
+        {
+            return 1;
+        }
+        else
+        {
+            return 0;
+        }
+        }
+
+        if (j==2)
+        {
+        //&&((acteur1->x)>=(acteur3->x+mini)) && ((acteur1->x)<=(acteur3->x-mini)) && ((acteur1->y)>=(acteur3->y+mini)) && ((acteur1->y)<=(acteur3->y-mini)))
+        if(((acteur1->x)<=(acteur3->x+maxi)) && ((acteur1->x)>=(acteur3->x-maxi)) && ((acteur1->y)<=(acteur3->y+maxi)) && ((acteur1->y)>=(acteur3->y-maxi))&&((acteur1->x)>=(acteur3->x+mini)) && ((acteur1->x)<=(acteur3->x-mini)) && ((acteur1->y)>=(acteur3->y+mini)) && ((acteur1->y)<=(acteur3->y-mini))) // creer un rectangle de detction autour du personnaage
+        {
+            return 1;
+        }
+
+        //&&((acteur2->x)>=(acteur3->x+mini)) && ((acteur2->x)<=(acteur3->x-mini)) && ((acteur2->y)>=(acteur3->y+mini)) && ((acteur2->y)<=(acteur3->y-mini)))
+        if(((acteur2->x)<=(acteur3->x+maxi)) && ((acteur2->x)>=(acteur3->x-maxi)) && ((acteur2->y)<=(acteur3->y+maxi)) && ((acteur2->y)>=(acteur3->y-maxi))&&((acteur2->x)>=(acteur3->x+mini)) && ((acteur2->x)<=(acteur3->x-mini)) && ((acteur2->y)>=(acteur3->y+mini)) && ((acteur2->y)<=(acteur3->y-mini))) // creer un rectangle de detction autour du personnaage
+        {
+            return 1;
+        }
+
+
+        //&&((acteur3->x)>=(acteur3->x+mini)) && ((acteur3->x)<=(acteur3->x-mini)) && ((acteur3->y)>=(acteur3->y+mini)) && ((acteur3->y)<=(acteur3->y-mini)))
+        /*if(((acteur3->x)<=(acteur3->x+maxi)) && ((acteur3->x)>=(acteur3->x-maxi)) && ((acteur3->y)<=(acteur3->y+maxi)) && ((acteur3->y)>=(acteur3->y-maxi))&&((acteur3->x)>=(acteur3->x+mini)) && ((acteur3->x)<=(acteur3->x-mini)) && ((acteur3->y)>=(acteur3->y+mini)) && ((acteur3->y)<=(acteur3->y-mini))) // creer un rectangle de detction autour du personnaage
+        {
+            return 1;
+        }*/
+
+        //&&((acteur4->x)>=(acteur3->x+mini)) && ((acteur4->x)<=(acteur3->x-mini)) && ((acteur4->y)>=(acteur3->y+mini)) && ((acteur4->y)<=(acteur3->y-mini)))
+        if(((acteur4->x)<=(acteur3->x+maxi)) && ((acteur4->x)>=(acteur3->x-maxi)) && ((acteur4->y)<=(acteur3->y+maxi)) && ((acteur4->y)>=(acteur3->y-maxi))&&((acteur4->x)>=(acteur3->x+mini)) && ((acteur4->x)<=(acteur3->x-mini)) && ((acteur4->y)>=(acteur3->y+mini)) && ((acteur4->y)<=(acteur3->y-mini))) // creer un rectangle de detction autour du personnaage
+        {
+            return 1;
+        }
+        else
+        {
+            return 0;
+        }
+        }
+
+        if (j==3)
+        {
+
+        //&&((acteur1->x)>=(acteur4->x+mini)) && ((acteur1->x)<=(acteur4->x-mini)) && ((acteur1->y)>=(acteur4->y+mini)) && ((acteur1->y)<=(acteur4->y-mini)))
+        if(((acteur1->x)<=(acteur4->x+maxi)) && ((acteur1->x)>=(acteur4->x-maxi)) && ((acteur1->y)<=(acteur4->y+maxi)) && ((acteur1->y)>=(acteur4->y-maxi))&&((acteur1->x)>=(acteur4->x+mini)) && ((acteur1->x)<=(acteur4->x-mini)) && ((acteur1->y)>=(acteur4->y+mini)) && ((acteur1->y)<=(acteur4->y-mini))) // creer un rectangle de detction autour du personnaage
+        {
+            return 1;
+        }
+
+        //&&((acteur2->x)>=(acteur4->x+mini)) && ((acteur2->x)<=(acteur4->x-mini)) && ((acteur2->y)>=(acteur4->y+mini)) && ((acteur2->y)<=(acteur4->y-mini)))
+        if(((acteur2->x)<=(acteur4->x+maxi)) && ((acteur2->x)>=(acteur4->x-maxi)) && ((acteur2->y)<=(acteur4->y+maxi)) && ((acteur2->y)>=(acteur4->y-maxi))&&((acteur2->x)>=(acteur4->x+mini)) && ((acteur2->x)<=(acteur4->x-mini)) && ((acteur2->y)>=(acteur4->y+mini)) && ((acteur2->y)<=(acteur4->y-mini))) // creer un rectangle de detction autour du personnaage
+        {
+            return 1;
+        }
+
+        //&&((acteur3->x)>=(acteur4->x+mini)) && ((acteur3->x)<=(acteur4->x-mini)) && ((acteur3->y)>=(acteur4->y+mini)) && ((acteur3->y)<=(acteur4->y-mini)))
+        if(((acteur3->x)<=(acteur4->x+maxi)) && ((acteur3->x)>=(acteur4->x-maxi)) && ((acteur3->y)<=(acteur4->y+maxi)) && ((acteur3->y)>=(acteur4->y-maxi))&&((acteur3->x)>=(acteur4->x+mini)) && ((acteur3->x)<=(acteur4->x-mini)) && ((acteur3->y)>=(acteur4->y+mini)) && ((acteur3->y)<=(acteur4->y-mini))) // creer un rectangle de detction autour du personnaage
+        {
+            return 1;
+        }
+
+        //&&((acteur4->x)>=(acteur4->x+mini)) && ((acteur4->x)<=(acteur4->x-mini)) && ((acteur4->y)>=(acteur4->y+mini)) && ((acteur4->y)<=(acteur4->y-mini)))
+        /*if(((acteur4->x)<=(acteur4->x+maxi)) && ((acteur4->x)>=(acteur4->x-maxi)) && ((acteur4->y)<=(acteur4->y+maxi)) && ((acteur4->y)>=(acteur4->y-maxi))&&((acteur4->x)>=(acteur4->x+mini)) && ((acteur4->x)<=(acteur4->x-mini)) && ((acteur4->y)>=(acteur4->y+mini)) && ((acteur4->y)<=(acteur4->y-mini))) // creer un rectangle de detction autour du personnaage
+        {
+            return 1;
+        }*/
+        else
+        {
+            return 0;
+        }
+
+
+        }
+
+        else
+        {
+            return 0;
+        }
+
+}
+
+bool estUneTuileAvecObstacle(t_coords position, int terrain[NYMAP][NXMAP], int typeTuiles[NTUILE])
+{
+    bool estUnObstacle = false;
+    if (typeTuiles[terrain[position.ligne][position.colonne]] == OBSTACLE)
+    {
+        estUnObstacle = true;
+    }
+    return estUnObstacle;
+}
+
+bool sontDesPositionsIdentiques(t_coords position1, t_coords position2)
+{
+    bool estMemePosition = false;
+    if ( (position1.ligne == position2.ligne) && (position1.colonne == position2.colonne) ){
+        estMemePosition = true;
+    }
+    return estMemePosition;
+}
+
+//avance d'une case horizontalement si c'est possible
+//renvoie la position après déplacement. Si cette position est la même que la position initiale, c'est qu'il y a eu un obstacle
+t_coords avancerHorizontalement(int terrain[NYMAP][NXMAP], int typeTuiles[NTUILE], t_coords positionDepart, t_coords positionCible)
+{
+    int deplacementHorizontal = positionCible.colonne - positionDepart.colonne;
+    if (deplacementHorizontal == 0)
+    {
+        return positionDepart;
+    }
+
+    int direction = deplacementHorizontal/abs(deplacementHorizontal);
+    t_coords positionFinale;
+
+    positionFinale.ligne = positionDepart.ligne;
+    positionFinale.colonne = positionDepart.colonne + direction;
+
+    //si la position suivante n'est pas un obstacle, elle devient la position finale : le déplacement est possible
+    if (estUneTuileAvecObstacle(positionFinale, terrain, typeTuiles))
+    {
+        //printf("\nimpossible d'avancer sur la case (%d, %d)",  positionFinale.ligne, positionFinale.colonne);
+        positionFinale.ligne = positionDepart.ligne;
+        positionFinale.colonne = positionDepart.colonne;
+    }
+
+//    printf("\nla position apres avancement horizontal est (%d, %d)",  positionFinale.ligne, positionFinale.colonne);
+    return positionFinale;
+}
+
+//avance d'une case verticalement si c'est possible
+//renvoie la position après déplacement. Si cette position est la même que la position initiale, c'est qu'il y a eu un obstacle
+t_coords avancerVerticalement(int terrain[NYMAP][NXMAP], int typeTuiles[NTUILE], t_coords positionDepart, t_coords positionCible)
+{
+    int deplacementVertical = positionCible.ligne - positionDepart.ligne;
+    if (deplacementVertical == 0)
+    {
+        return positionDepart;
+    }
+    t_coords positionFinale;
+
+    int direction = deplacementVertical/abs(deplacementVertical);
+    positionFinale.ligne = positionDepart.ligne + direction;
+    positionFinale.colonne = positionDepart.colonne ;
+
+    //si la position suivante n'est pas un obstacle, elle devient la position finale : le déplacement est possible
+    if (estUneTuileAvecObstacle(positionFinale, terrain, typeTuiles))
+    {
+        //printf("\nimpossible d'avancer sur la case (%d, %d)",  positionFinale.ligne, positionFinale.colonne);
+        positionFinale.ligne = positionDepart.ligne;
+        positionFinale.colonne = positionDepart.colonne;
+
+    }
+    //printf("\nla position apres avancement vertical est (%d, %d)",  positionFinale.ligne, positionFinale.colonne);
+    return positionFinale;
+}
+
+void ajouterPositionDansChemin(t_coords tab_chemin[10], t_coords position, int indiceTabChemin )
+{
+    tab_chemin[indiceTabChemin].ligne = position.ligne;
+    tab_chemin[indiceTabChemin].colonne = position.colonne;
+}
+
+t_coords calculerNouvellePosition(t_coords tab_chemin[10],  int terrain[NYMAP][NXMAP], int typeTuiles[NTUILE], t_coords positionDepart, t_coords positionFinale)
+{
+    t_coords nouvellePosition = avancerHorizontalement(terrain, typeTuiles, positionDepart, positionFinale);
+    if (sontDesPositionsIdentiques(nouvellePosition, positionDepart))
+    {
+        //printf("\npas possible d'avancer horizontalement depuis la case (%d, %d)", nouvellePosition.ligne, nouvellePosition.colonne);
+        return avancerVerticalement(terrain, typeTuiles, positionDepart, positionFinale);
+    }
+    else {
+        return nouvellePosition;
+    }
+}
+
+
+int calculerNewChemin(t_coords tab_chemin[10], int terrain[NYMAP][NXMAP], int typeTuiles[NTUILE], t_coords positionInitiale, t_coords positionFinale, int pm)
+{
+    int nbreTuilesSurChemin = 0;
+
+
+    int deplacementHorizontal = positionFinale.colonne - positionInitiale.colonne; //nbre de déplacements (d'une case) horizontaux
+
+    int deplacementVertical = positionFinale.ligne - positionInitiale.ligne; //nbre de déplacements (d'une case) verticaux
+
+    int nbreTuilesDeplacementSansObstacle = abs(deplacementHorizontal) + abs(deplacementVertical);
+    //si la position finale est égale à la position initiale, pas de déplacement
+    if (deplacementHorizontal == 0 && deplacementVertical == 0)
+    {
+        return 0;
+    }
+
+    if (nbreTuilesDeplacementSansObstacle > pm)
+    {
+        //printf("\ndeplacement de %d tuiles impossible, vous depassez la pm %d", nbreTuilesDeplacementSansObstacle, pm);
+        return -1;
+    }
+
+    int indiceTabChemin = 0;
+    int compteur = 0;
+    t_coords positionDepart;
+    t_coords nouvellePosition;
+    positionDepart.ligne = positionInitiale.ligne;
+    positionDepart.colonne = positionInitiale.colonne;
+
+    nouvellePosition.ligne = positionInitiale.ligne;
+    nouvellePosition.colonne = positionInitiale.colonne;
+
+    while(compteur < pm && !sontDesPositionsIdentiques(nouvellePosition, positionFinale))
+    {
+        nouvellePosition = calculerNouvellePosition(tab_chemin, terrain, typeTuiles, positionDepart, positionFinale);
+        if (sontDesPositionsIdentiques(nouvellePosition, positionDepart)) //on ne peut plus avancer
+        {
+            break;
+        }
+        ajouterPositionDansChemin(tab_chemin, nouvellePosition, indiceTabChemin);
+        positionDepart.ligne = nouvellePosition.ligne;
+        positionDepart.colonne = nouvellePosition.colonne;
+        indiceTabChemin ++;
+        nbreTuilesSurChemin ++;
+        compteur ++;
+    }
+
+    if (sontDesPositionsIdentiques(nouvellePosition, positionFinale))
+    {
+        return nbreTuilesSurChemin;
+    }
+    else
+    {
+        return -1;
+    }
+}
+
+void peindreTuile(BITMAP* bmp, t_coords tuile, int couleur)
+{
+    rectfill(bmp,tuile.colonne*TXTUILE, tuile.ligne*TYTUILE, tuile.colonne*TXTUILE+TXTUILE-1, tuile.ligne*TYTUILE +TYTUILE-1, couleur );
 }

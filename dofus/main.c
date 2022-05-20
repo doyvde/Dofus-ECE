@@ -19,6 +19,8 @@ DECOR TILEMAP: Ce programme construit un decor à l'écran
 **************************************************************************/
 
 #include <allegro.h>
+#include <stdbool.h>
+#include <winalleg.h>
 #include "mabiblio.h"
 
 
@@ -31,14 +33,16 @@ DECOR TILEMAP: Ce programme construit un decor à l'écran
 int main()
 {
     //Joueur Joueures[4];//
-    t_acteur *acteur1;    // Un acteur (à créer)
+    /*t_acteur *acteur1;    // Un acteur (à créer)
     t_acteur *acteur2;    // Un acteur (à créer)
     t_acteur *acteur3;    // Un acteur (à créer)
-    t_acteur *acteur4;    // Un acteur (à créer)
+    t_acteur *acteur4;    // Un acteur (à créer)*/
     BITMAP *page;// BITMAP buffer d'affichage
-    int findetous=0,fin=0,fin1=0,fin2=0,fin3=0,nbjoueur=0,aurevoir=0;
+    t_coords tabChemin[10];
+    int findetous=0,fin=0,fin1=0,fin2=0,fin3=0,fin4=0,nbjoueur=0,aurevoir=0;
     int i=0,j=0;
     int ennemi=0;
+    int distance=0,distance1=0,distance2=0,distance3=0,distance4=0;
 
     // Lancer allegro et le mode graphique
     allegro_init();
@@ -101,6 +105,8 @@ int main()
     //((acteur3->x)<=(acteur4->x+100)) && ((acteur3->x)>=(acteur4->x-100)) && ((acteur3->y)<=(acteur4->y+100)) && ((acteur3->y)>=(acteur4->y-100))) // creer un rectangle de detction autour du personnaage
     //acteur4->img = load_bitmap_check("sprite.bmp");
 
+    t_coords tuileSouris;
+    t_coords tuileJoueur;
 
         while ((!fin))
     {
@@ -416,10 +422,211 @@ int main()
     {
         for(j=0;((j<nbjoueur)&&((Joueures[j].pv)>0));)
     {
+        while ((!fin4))
+    {
         clear_bitmap(page);
 
         // Dessiner le terrain
         dessineTerrain(page, terrain);
+    if(j==0)
+    {
+        tuileSouris.ligne = mouse_y / TYTUILE;
+        tuileSouris.colonne = mouse_x / TXTUILE;
+
+        tuileJoueur.ligne = acteur1->y / TYTUILE;
+        tuileJoueur.colonne = acteur1->x / TXTUILE;
+
+        //tableau 2 valeurs : lorsque posActuelle - posStockee > Tuile
+                            //alors on declenche le calcul et on actualise la posStockee
+
+        //réinitialisation du tableau pour éviter problèmes
+        for(int i=0; i<PM_MAX; i++){
+            tabChemin[i].colonne = 0;
+            tabChemin[i].ligne = 0;
+        }
+
+        int isNewCheminDisponible = calculerNewChemin(tabChemin, terrain ,typeTuiles, tuileJoueur, tuileSouris, PM_MAX);    //renvoie le nombre de déplacements (nombre de tuile à parcourir)
+                                    //calculerNewChemin(tabChemin, terrain ,typeTuiles, tuileJoueur, tuileSouris, acteur->pm);
+        if(isNewCheminDisponible != -1){
+            //si le déplacement est possible, on colorie toutes les tuiles utilisées pour le déplacement
+            for(int i=0; i < isNewCheminDisponible; i++){
+                peindreTuile(page, tabChemin[i], makecol(0,0,255));
+                peindreTuile(page, tuileJoueur, makecol(0,255,0));
+            }
+
+            if(mouse_b & 1){    //si on clique sur la souris
+                for(int i = 0; i < isNewCheminDisponible; i++){
+                    acteur1->x = tabChemin[i].colonne*TXTUILE;
+                    acteur1->y = tabChemin[i].ligne*TYTUILE;
+
+                    if(i<PM_MAX - 1){
+                            /*Pour animer correctement : Une fonction qui renvoie la direction du mouvement (dans quel sens et horizontal ou vertical)   */
+
+                        dessineTerrain(page, terrain);
+                        draw_sprite(page, acteur1->img, acteur1->x -acteur1->img->w/4 , acteur1->y - acteur1->img->h + 12);
+                        blit(page,screen,0,0,0,0,SCREEN_W,SCREEN_H);    //on affiche à l'écran
+                        rest(75);   //delai poour qu'on puisse voir l'animation
+
+                    }
+                }
+                //enlever isNewCheminDisponible à la PM du joueur
+            }
+
+        }
+        else{
+                peindreTuile(page, tuileJoueur, makecol(255,0,0));  //si le déplacement n'est pas possible, on peint la tuile sous les pieds du joueurs en Rouge
+        }
+    }
+
+    if(j==1)
+    {
+        tuileSouris.ligne = mouse_y / TYTUILE;
+        tuileSouris.colonne = mouse_x / TXTUILE;
+
+        tuileJoueur.ligne = acteur2->y / TYTUILE;
+        tuileJoueur.colonne = acteur2->x / TXTUILE;
+
+        //tableau 2 valeurs : lorsque posActuelle - posStockee > Tuile
+                            //alors on declenche le calcul et on actualise la posStockee
+
+        //réinitialisation du tableau pour éviter problèmes
+        for(int i=0; i<PM_MAX; i++){
+            tabChemin[i].colonne = 0;
+            tabChemin[i].ligne = 0;
+        }
+
+        int isNewCheminDisponible = calculerNewChemin(tabChemin, terrain ,typeTuiles, tuileJoueur, tuileSouris, PM_MAX);    //renvoie le nombre de déplacements (nombre de tuile à parcourir)
+                                    //calculerNewChemin(tabChemin, terrain ,typeTuiles, tuileJoueur, tuileSouris, acteur->pm);
+        if(isNewCheminDisponible != -1){
+            //si le déplacement est possible, on colorie toutes les tuiles utilisées pour le déplacement
+            for(int i=0; i < isNewCheminDisponible; i++){
+                peindreTuile(page, tabChemin[i], makecol(0,0,255));
+                peindreTuile(page, tuileJoueur, makecol(0,255,0));
+            }
+
+            if(mouse_b & 1){    //si on clique sur la souris
+                for(int i = 0; i < isNewCheminDisponible; i++){
+                    acteur2->x = tabChemin[i].colonne*TXTUILE;
+                    acteur2->y = tabChemin[i].ligne*TYTUILE;
+
+                    if(i<PM_MAX - 1){
+                            /*Pour animer correctement : Une fonction qui renvoie la direction du mouvement (dans quel sens et horizontal ou vertical)   */
+
+                        dessineTerrain(page, terrain);
+                        draw_sprite(page, acteur2->img, acteur2->x -acteur2->img->w/4 , acteur2->y - acteur2->img->h + 12);
+                        blit(page,screen,0,0,0,0,SCREEN_W,SCREEN_H);    //on affiche à l'écran
+                        rest(75);   //delai poour qu'on puisse voir l'animation
+
+                    }
+                }
+                //enlever isNewCheminDisponible à la PM du joueur
+            }
+
+        }
+        else{
+                peindreTuile(page, tuileJoueur, makecol(255,0,0));  //si le déplacement n'est pas possible, on peint la tuile sous les pieds du joueurs en Rouge
+        }
+    }
+
+    if(j==2)
+    {
+        tuileSouris.ligne = mouse_y / TYTUILE;
+        tuileSouris.colonne = mouse_x / TXTUILE;
+
+        tuileJoueur.ligne = acteur3->y / TYTUILE;
+        tuileJoueur.colonne = acteur3->x / TXTUILE;
+
+        //tableau 2 valeurs : lorsque posActuelle - posStockee > Tuile
+                            //alors on declenche le calcul et on actualise la posStockee
+
+        //réinitialisation du tableau pour éviter problèmes
+        for(int i=0; i<PM_MAX; i++){
+            tabChemin[i].colonne = 0;
+            tabChemin[i].ligne = 0;
+        }
+
+        int isNewCheminDisponible = calculerNewChemin(tabChemin, terrain ,typeTuiles, tuileJoueur, tuileSouris, PM_MAX);    //renvoie le nombre de déplacements (nombre de tuile à parcourir)
+                                    //calculerNewChemin(tabChemin, terrain ,typeTuiles, tuileJoueur, tuileSouris, acteur->pm);
+        if(isNewCheminDisponible != -1){
+            //si le déplacement est possible, on colorie toutes les tuiles utilisées pour le déplacement
+            for(int i=0; i < isNewCheminDisponible; i++){
+                peindreTuile(page, tabChemin[i], makecol(0,0,255));
+                peindreTuile(page, tuileJoueur, makecol(0,255,0));
+            }
+
+            if(mouse_b & 1){    //si on clique sur la souris
+                for(int i = 0; i < isNewCheminDisponible; i++){
+                    acteur3->x = tabChemin[i].colonne*TXTUILE;
+                    acteur3->y = tabChemin[i].ligne*TYTUILE;
+
+                    if(i<PM_MAX - 1){
+                            /*Pour animer correctement : Une fonction qui renvoie la direction du mouvement (dans quel sens et horizontal ou vertical)   */
+
+                        dessineTerrain(page, terrain);
+                        draw_sprite(page, acteur3->img, acteur3->x -acteur3->img->w/4 , acteur3->y - acteur3->img->h + 12);
+                        blit(page,screen,0,0,0,0,SCREEN_W,SCREEN_H);    //on affiche à l'écran
+                        rest(75);   //delai poour qu'on puisse voir l'animation
+
+                    }
+                }
+                //enlever isNewCheminDisponible à la PM du joueur
+            }
+
+        }
+        else{
+                peindreTuile(page, tuileJoueur, makecol(255,0,0));  //si le déplacement n'est pas possible, on peint la tuile sous les pieds du joueurs en Rouge
+        }
+    }
+
+    if(j==3)
+    {
+        tuileSouris.ligne = mouse_y / TYTUILE;
+        tuileSouris.colonne = mouse_x / TXTUILE;
+
+        tuileJoueur.ligne = acteur4->y / TYTUILE;
+        tuileJoueur.colonne = acteur4->x / TXTUILE;
+
+        //tableau 2 valeurs : lorsque posActuelle - posStockee > Tuile
+                            //alors on declenche le calcul et on actualise la posStockee
+
+        //réinitialisation du tableau pour éviter problèmes
+        for(int i=0; i<PM_MAX; i++){
+            tabChemin[i].colonne = 0;
+            tabChemin[i].ligne = 0;
+        }
+
+        int isNewCheminDisponible = calculerNewChemin(tabChemin, terrain ,typeTuiles, tuileJoueur, tuileSouris, PM_MAX);    //renvoie le nombre de déplacements (nombre de tuile à parcourir)
+                                    //calculerNewChemin(tabChemin, terrain ,typeTuiles, tuileJoueur, tuileSouris, acteur->pm);
+        if(isNewCheminDisponible != -1){
+            //si le déplacement est possible, on colorie toutes les tuiles utilisées pour le déplacement
+            for(int i=0; i < isNewCheminDisponible; i++){
+                peindreTuile(page, tabChemin[i], makecol(0,0,255));
+                peindreTuile(page, tuileJoueur, makecol(0,255,0));
+            }
+
+            if(mouse_b & 1){    //si on clique sur la souris
+                for(int i = 0; i < isNewCheminDisponible; i++){
+                    acteur4->x = tabChemin[i].colonne*TXTUILE;
+                    acteur4->y = tabChemin[i].ligne*TYTUILE;
+
+                    if(i<PM_MAX - 1){
+                            /*Pour animer correctement : Une fonction qui renvoie la direction du mouvement (dans quel sens et horizontal ou vertical)   */
+
+                        dessineTerrain(page, terrain);
+                        draw_sprite(page, acteur4->img, acteur4->x -acteur4->img->w/4 , acteur4->y - acteur4->img->h + 12);
+                        blit(page,screen,0,0,0,0,SCREEN_W,SCREEN_H);    //on affiche à l'écran
+                        rest(75);   //delai poour qu'on puisse voir l'animation
+
+                    }
+                }
+                //enlever isNewCheminDisponible à la PM du joueur
+            }
+
+        }
+        else{
+                peindreTuile(page, tuileJoueur, makecol(255,0,0));  //si le déplacement n'est pas possible, on peint la tuile sous les pieds du joueurs en Rouge
+        }
+    }
 
         ennemi=5;
 
@@ -788,7 +995,9 @@ int main()
         */
 
         // bouton attaque corps à corps
-        if( mouse_x<=420 && mouse_x>=380 && mouse_y<=620 && mouse_y>=600)
+        distance=0;
+        //distance=zonedetect(j,10,0);
+        if(distance==1)//( mouse_x<=420 && mouse_x>=380 && mouse_y<=620 && mouse_y>=600)
         {
             rectfill(page,380,600,420,620,makecol(255,0,0 ));
         }
@@ -804,7 +1013,9 @@ int main()
         }
 
         // bouton attaque à distance 1
-        if ( mouse_x<=370 && mouse_x>=330 && mouse_y<=640 && mouse_y>=620)
+        distance1=0;
+        //distance1=zonedetect(j,100,50);
+        if (distance1==1)//( mouse_x<=370 && mouse_x>=330 && mouse_y<=640 && mouse_y>=620)
         {
             rectfill(page,330,620,370,640,makecol(0,0,255));
         }
@@ -821,7 +1032,9 @@ int main()
         }
 
         // bouton attaque à distance 2
-        if( mouse_x<=470 && mouse_x>=430 && mouse_y<=640 && mouse_y>=620)
+        distance2=0;
+        //distance2=zonedetect(j,50,0);
+        if(distance2==1)//( mouse_x<=470 && mouse_x>=430 && mouse_y<=640 && mouse_y>=620)
         {
            rectfill(page,430,620,470,640,makecol(0,0,255));
         }
@@ -837,7 +1050,9 @@ int main()
         }
 
         // bouton attaque à distance 3
-        if( mouse_x<=370 && mouse_x>=330 && mouse_y<=680 && mouse_y>=660)
+        distance3=0;
+        //distance3=zonedetect(j,150,100);
+        if(distance3==1)//( mouse_x<=370 && mouse_x>=330 && mouse_y<=680 && mouse_y>=660)
         {
             rectfill(page,330,660,370,680,makecol(0,0,255));
         }
@@ -847,13 +1062,16 @@ int main()
         }
 
         textprintf_centre_ex(page,font,350,665,makecol(255,255,255),0,"Sort3");
+
         if( mouse_b&1 && mouse_x<=370 && mouse_x>=330 && mouse_y<=680 && mouse_y>=660)
         {
             Sort3(Joueures[j].classe,j,ennemi);
         }
 
         // bouton attaque à distance 4
-        if( mouse_x<=470 && mouse_x>=430 && mouse_y<=680 && mouse_y>=660)
+        distance4=0;
+        //distance4=zonedetect(j,100,0);
+        if(zonedetect(acteur1,acteur2,acteur3,acteur4,j,100,50)==1)//  ( mouse_x<=470 && mouse_x>=430 && mouse_y<=680 && mouse_y>=660)
         {
             rectfill(page,430,660,470,680,makecol(0,0,255));
         }
@@ -873,8 +1091,8 @@ int main()
         // Infos ennemi 2
         if(nbjoueur==2)
         {
-            textprintf_right_ex(page,font,792,580,makecol(255,0,0),makecol(0,255,0),"Joueur 1 PV: %d",Joueures[0].pv);
-            textprintf_right_ex(page,font,792,600,makecol(255,0,0),makecol(0,255,0),"Joueur 2 PV: %d",Joueures[1].pv);
+            textprintf_right_ex(page,font,792,580,makecol(255,0,0),makecol(0,255,0),"Joueur 1 PV: %d",distance1);
+            textprintf_right_ex(page,font,792,600,makecol(255,0,0),makecol(0,255,0),"Joueur 2 PV: %d",distance4);
         }
 
         // Infos ennemi 3
@@ -1031,11 +1249,11 @@ int main()
         // On fait une petite pause
         rest(15);
 
-
+    }
     }
 
-    return 0;
-}
 
+}
+return 0;
 }
 END_OF_MAIN();

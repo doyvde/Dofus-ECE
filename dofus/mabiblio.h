@@ -14,6 +14,10 @@
 #define NXMAP      50      // Nombre de tuiles en largeur sur le terrain
 #define NYMAP      35      // Nombre de tuiles en hauteur sur le terrain
 
+#define PM_MAX 3
+#define OBSTACLE 1      // un obstacle est représenté par le type 1 dans la matrice terrain
+
+
 int typeTuiles[NTUILE];
 int terrain[NYMAP][NXMAP];
 
@@ -44,7 +48,27 @@ typedef struct enregistrementDesJoueurs
 
 } Joueur;//
 
+typedef struct Tuile{
+int type;  //le type peut avoir 3 valeurs : 0 = normal, 1 = obstacle, 2 = eau
+//int couleur;
+//int occupeParJoueur;
+//bool estAtteignable;
+// bool estLibre = (occupeParJoueur >= 0) && (type != obst);
+
+}t_tuile;
+
+typedef struct coordonneesTuiles
+{
+    int ligne;
+    int colonne;
+}t_coords;
+
+
 Joueur Joueures[4];//
+t_acteur *acteur1;    // Un acteur (à créer)
+t_acteur *acteur2;    // Un acteur (à créer)
+t_acteur *acteur3;    // Un acteur (à créer)
+t_acteur *acteur4;    // Un acteur (à créer)*/
 
 void initialiseJoueurs(int nJoueures);
 void dessineTuile(BITMAP *bmp, int ituile, int xmap, int ymap);
@@ -56,5 +80,13 @@ void Sort1(int numeroClasse,int i,int lattaque);
 void Sort2(int numeroClasse,int i,int lattaque);
 void Sort3(int numeroClasse,int i,int lattaque);
 void Sort4(int numeroClasse,int i,int lattaque);
-
+int zonedetect(t_acteur *acteur1, t_acteur *acteur2, t_acteur *acteur3,t_acteur *acteur4,int j,int maxi,int mini);
+void peindreTuile(BITMAP* bmp, t_coords tuile, int couleur);
+int calculerNewChemin(t_coords tab_chemin[10], int terrain[NYMAP][NXMAP], int typeTuiles[NTUILE], t_coords positionInitiale, t_coords positionFinale, int pm);
+t_coords calculerNouvellePosition(t_coords tab_chemin[10],  int terrain[NYMAP][NXMAP], int typeTuiles[NTUILE], t_coords positionDepart, t_coords positionFinale);
+void ajouterPositionDansChemin(t_coords tab_chemin[10], t_coords position, int indiceTabChemin );
+t_coords avancerVerticalement(int terrain[NYMAP][NXMAP], int typeTuiles[NTUILE], t_coords positionDepart, t_coords positionCible);
+t_coords avancerHorizontalement(int terrain[NYMAP][NXMAP], int typeTuiles[NTUILE], t_coords positionDepart, t_coords positionCible);
+bool sontDesPositionsIdentiques(t_coords position1, t_coords position2);
+bool estUneTuileAvecObstacle(t_coords position, int terrain[NYMAP][NXMAP], int typeTuiles[NTUILE]);
 #endif // MABIBLIO_H_INCLUDED
