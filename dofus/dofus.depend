@@ -1,6 +1,21 @@
 # depslib dependency file v1.0
-1652270629 source:c:\users\denis\onedrive\documents\ece ing1\informatique\code\dofus\main.c
+1653147895 source:c:\users\denis\onedrive\documents\ece ing1\informatique\code\dofus\main.c
 	<stdio.h>
 	<stdlib.h>
+	<time.h>
 	<allegro.h>
+	<stdbool.h>
+	<winalleg.h>
+	"mabiblio.h"
+
+1653131011 c:\users\denis\onedrive\documents\ece ing1\informatique\code\dofus\mabiblio.h
+
+1653140153 source:c:\users\denis\onedrive\documents\ece ing1\informatique\code\dofus\mesfonctions.c
+	<stdio.h>
+	<stdlib.h>
+	<stdbool.h>
+	<allegro.h>
+	<time.h>
+	<winalleg.h>
+	"mabiblio.h"
 
